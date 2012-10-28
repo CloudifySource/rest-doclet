@@ -55,22 +55,14 @@ import com.sun.javadoc.Tag;
 /**
  * Generates REST API documentation in an HTML form.
  * <br />
- * Uses velocity template to generate an html file that contains the documentation.
+ * Uses velocity template to generate an HTML file that contains the documentation.
  * <ul>
- * <li>To specify your sources change the values of {@link RestDocConstants#SOURCE_PATH_FLAG} flag in the {@link #main(String[])}.</li>
- * <li>To generate the documentation using a different {@link Doclet} class, create a new {@link Generator} and call the {@link #run()} method from the {@link Doclet#start(RootDoc)} method.</li>
- * <br />
- * <li>To change the template path add the flag {@link RestDocConstants#VELOCITY_TEMPLATE_PATH_FLAG} with the wanted path.</li>
- * <br />
- * In default the Generator uses the velocity template {@link RestDocConstants#DEFAULT_VELOCITY_TEMPLATE_PATH}
- * and writes the result to {@link RestDocConstants#DEFAULT_DOC_DEST_PATH}.
- * <li>To change the destination of the result html add the flag {@link RestDocConstants#DOC_DEST_PATH_FLAG} with the wanted path.
- * <br />
- * <li>To generate the documentation in a different way, you can do one of the following:</li>
- * <ul><li>Override the {@link #generateHtmlDocumentation(List)} method - this way you have to generate a <code>String</code> documentation.</li>
- * <li>Extend the {@link Generator} class, override the {@link #run()} method and call the {@link #generateControllers(ClassDoc[])} method to get the list of {@link DocController}s. 
- * <br />Then you can use the {@link DocController}s' list to generate your documentation as you wish.</li></ul>
- * </ul>
+ * <li>To specify your sources change the values of {@link RestDocConstants#SOURCE_PATH} and {@link RestDocConstants#CONTROLLERS_PACKAGE}.</li>
+ * <li>To specify different template path change the value {@link RestDocConstants#VELOCITY_TEMPLATE_PATH}.</li>
+ * <li>To specify the destination path of the result HTML change the value {@link RestDocConstants#DOC_DEST_PATH}.</li></ul>
+ * In default the Generator uses the velocity template {@link RestDocConstants#VELOCITY_TEMPLATE_PATH}
+ * and writes the result to {@link RestDocConstants#DOC_DEST_PATH}.
+ * 
  * @author yael
  * 
  */
@@ -102,9 +94,9 @@ public class Generator {
 		com.sun.tools.javadoc.Main.execute(new String[] { 
 				RestDocConstants.DOCLET_FLAG, RestDoclet.class.getName(), 
 				RestDocConstants.SOURCE_PATH_FLAG, RestDocConstants.SOURCES_PATH, RestDocConstants.CONTROLLERS_PACKAGE,
-//				RestDocConstants.VELOCITY_TEMPLATE_PATH_FLAG, RestDocConstants.DEFAULT_VELOCITY_TEMPLATE_PATH,
-//				RestDocConstants.DOC_DEST_PATH_FLAG, "target/test.html",
-//				RestDocConstants.VERSION_FLAG, "2.2.0",
+				RestDocConstants.VELOCITY_TEMPLATE_PATH_FLAG, RestDocConstants.VELOCITY_TEMPLATE_PATH,
+				RestDocConstants.DOC_DEST_PATH_FLAG, RestDocConstants.DOC_DEST_PATH,
+				RestDocConstants.VERSION_FLAG, RestDocConstants.VERSION
 		});
 	}
 
@@ -132,12 +124,12 @@ public class Generator {
 			velocityTemplatePath = velocityTemplatePath.substring(0, fileNameIndex - 1);
 		}
 		else {
-			velocityTemplateFileName = RestDocConstants.DEFAULT_VELOCITY_TEMPLATE_FILE_NAME;
+			velocityTemplateFileName = RestDocConstants.VELOCITY_TEMPLATE_FILE_NAME;
 			velocityTemplatePath = this.getClass().getClassLoader().getResource(velocityTemplateFileName).getPath();
 		}
 
 		if(docPath == null)
-			docPath =  RestDocConstants.DEFAULT_DOC_DEST_PATH;
+			docPath =  RestDocConstants.DOC_DEST_PATH;
 		
 		if(version == null)
 			version = "";
