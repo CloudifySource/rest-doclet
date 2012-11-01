@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.cloudifysource</groupId>
 	<artifactId>rest-doclet</artifactId>
-	<version>0.1.0</version>
+	<version>0.2.0</version>
 
 	<properties>
 		<springVersion>3.1.1.RELEASE</springVersion>
