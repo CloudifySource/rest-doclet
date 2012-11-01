@@ -15,6 +15,8 @@
  *******************************************************************************/
 package org.cloudifysource.restDoclet.constants;
 
+import java.io.File;
+
 import org.cloudifysource.restDoclet.docElements.DocAnnotation;
 import org.cloudifysource.restDoclet.docElements.DocJsonRequestExample;
 import org.cloudifysource.restDoclet.docElements.DocJsonResponseExample;
@@ -40,14 +42,17 @@ public class RestDocConstants {
 	public static final String ADMIN_API_CONTROLLER_CLASS_NAME = "org.cloudifysource.rest.controllers.AdminAPIController";
 
 	public static final String VELOCITY_TEMPLATE_PATH_FLAG = "-velocityTemplateFilePath";
+	public static final String VELOCITY_TEMPLATE_FILE_NAME = "restDocletVelocityTemplate.vm";
+	public static final String VELOCITY_TEMPLATE_PATH = "src" + File.separator + "main" + File.separator + "resources" + File.separator + VELOCITY_TEMPLATE_FILE_NAME;
+	
 	public static final String DOC_DEST_PATH_FLAG = "-docletDestdir";
+	public static final String DOC_DEST_PATH = "restdoclet.html";
+
+	public static final String DOC_CSS_PATH_FLAG = "-docletCss";
+	public static final String DOC_CSS_PATH = "restdoclet.css";
 	
 	public static final String VERSION_FLAG = "-version";
 	public static final String VERSION = "";
-
-	public static final String VELOCITY_TEMPLATE_FILE_NAME = "restDocletVelocityTemplate.vm";
-	public static final String VELOCITY_TEMPLATE_PATH = "src/main/resources/" + VELOCITY_TEMPLATE_FILE_NAME;
-	public static final String DOC_DEST_PATH = "restdoclet.html";
 	
 	public static final String CONTROLLER_ANNOTATION = "Controller";
 	

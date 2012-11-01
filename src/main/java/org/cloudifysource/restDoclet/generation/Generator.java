@@ -50,15 +50,21 @@ import com.sun.javadoc.RootDoc;
 import com.sun.javadoc.Tag;
 
 /**
- * Generates REST API documentation in an HTML form.
- * <br />
- * Uses velocity template to generate an HTML file that contains the documentation.
+ * Generates REST API documentation in an HTML form. <br />
+ * Uses velocity template to generate an HTML file that contains the
+ * documentation.
  * <ul>
- * <li>To specify your sources change the values of {@link RestDocConstants#SOURCE_PATH} and {@link RestDocConstants#CONTROLLERS_PACKAGE}.</li>
- * <li>To specify different template path change the value {@link RestDocConstants#VELOCITY_TEMPLATE_PATH}.</li>
- * <li>To specify the destination path of the result HTML change the value {@link RestDocConstants#DOC_DEST_PATH}.</li></ul>
- * In default the Generator uses the velocity template {@link RestDocConstants#VELOCITY_TEMPLATE_PATH}
- * and writes the result to {@link RestDocConstants#DOC_DEST_PATH}.
+ * <li>To specify your sources change the values of
+ * {@link RestDocConstants#SOURCE_PATH} and
+ * {@link RestDocConstants#CONTROLLERS_PACKAGE}.</li>
+ * <li>To specify different template path change the value
+ * {@link RestDocConstants#VELOCITY_TEMPLATE_PATH}.</li>
+ * <li>To specify the destination path of the result HTML change the value
+ * {@link RestDocConstants#DOC_DEST_PATH}.</li>
+ * </ul>
+ * In default the Generator uses the velocity template
+ * {@link RestDocConstants#VELOCITY_TEMPLATE_PATH} and writes the result to
+ * {@link RestDocConstants#DOC_DEST_PATH}.
  * 
  * @author yael
  * 
@@ -70,8 +76,10 @@ public class Generator {
 	private boolean isUserDefineTemplatePath = false;
 	private String docPath;
 	private String version;
-	private static final Logger logger = Logger.getLogger(Generator.class.getName());
+	private String docCssPath;
 
+	private static final Logger logger = Logger.getLogger(Generator.class
+			.getName());
 
 	/**
 	 * 
@@ -83,64 +91,76 @@ public class Generator {
 	}
 
 	/**
-	 * @param args
-	 * @throws Exception
+	 * @param args .
+	 * @throws Exception .
 	 */
 	public static void main(final String[] args) throws Exception {
 
-		com.sun.tools.javadoc.Main.execute(new String[] { 
-				RestDocConstants.DOCLET_FLAG, RestDoclet.class.getName(), 
+		com.sun.tools.javadoc.Main.execute(new String[] {
+				RestDocConstants.DOCLET_FLAG, RestDoclet.class.getName(),
 				RestDocConstants.SOURCE_PATH_FLAG, RestDocConstants.SOURCES_PATH, RestDocConstants.CONTROLLERS_PACKAGE,
 				RestDocConstants.VELOCITY_TEMPLATE_PATH_FLAG, RestDocConstants.VELOCITY_TEMPLATE_PATH,
-				RestDocConstants.DOC_DEST_PATH_FLAG, RestDocConstants.DOC_DEST_PATH,
-				RestDocConstants.VERSION_FLAG, RestDocConstants.VERSION
-		});
+				RestDocConstants.DOC_DEST_PATH_FLAG, RestDocConstants.DOC_DEST_PATH, 
+				RestDocConstants.DOC_CSS_PATH_FLAG, RestDocConstants.DOC_CSS_PATH,
+				RestDocConstants.VERSION_FLAG, RestDocConstants.VERSION });
 	}
 
 	/**
 	 * 
 	 * @param options
 	 */
-	private void setFlags(String[][] options) {
+	private void setFlags(final String[][] options) {
 		int flagPos = 0;
 		int contentPos = 1;
 		for (int i = 0; i < options.length; i++) {
-			if (RestDocConstants.VELOCITY_TEMPLATE_PATH_FLAG.equals(options[i][flagPos])) {
-				velocityTemplatePath = options[i][contentPos];
+			String flagName = options[i][flagPos];
+			String flagValue = options[i][contentPos];
+			if (RestDocConstants.VELOCITY_TEMPLATE_PATH_FLAG.equals(flagName)) {
+				velocityTemplatePath = flagValue;
 				isUserDefineTemplatePath = true;
+			} else if (RestDocConstants.DOC_DEST_PATH_FLAG.equals(flagName)) {
+				docPath = flagValue;
+			} else if (RestDocConstants.VERSION_FLAG.equals(flagName)) {
+				version = flagValue;
+			} else if (RestDocConstants.DOC_CSS_PATH_FLAG.equals(flagName)) {
+				docCssPath = flagValue;
 			}
-			else if (RestDocConstants.DOC_DEST_PATH_FLAG.equals(options[i][flagPos])) 
-				docPath = options[i][contentPos];
-			else if(RestDocConstants.VERSION_FLAG.equals(options[i][flagPos]))
-				version = options[i][contentPos];
 		}
 
-		if(velocityTemplatePath != null) {
-			int fileNameIndex = velocityTemplatePath.lastIndexOf('/') + 1;
-			velocityTemplateFileName = velocityTemplatePath.substring(fileNameIndex);
+		if (velocityTemplatePath != null) {
+			int fileNameIndex = velocityTemplatePath.lastIndexOf(File.separator) + 1;
+			velocityTemplateFileName = velocityTemplatePath
+					.substring(fileNameIndex);
 			velocityTemplatePath = velocityTemplatePath.substring(0, fileNameIndex - 1);
-		}
-		else {
+		} else {
 			velocityTemplateFileName = RestDocConstants.VELOCITY_TEMPLATE_FILE_NAME;
-			velocityTemplatePath = this.getClass().getClassLoader().getResource(velocityTemplateFileName).getPath();
+			velocityTemplatePath = this.getClass().getClassLoader()
+					.getResource(velocityTemplateFileName).getPath();
 		}
 
-		if(docPath == null)
-			docPath =  RestDocConstants.DOC_DEST_PATH;
+		if (docPath == null) {
+			docPath = RestDocConstants.DOC_DEST_PATH;
+		}
 		
-		if(version == null)
-			version = "";
+		if (version == null) {
+			version = RestDocConstants.VERSION;
+		}
+		
+		if (docCssPath == null) {
+			docCssPath = RestDocConstants.DOC_CSS_PATH;
+		}
 	}
 
 	/**
 	 * 
-	 * @throws Exception
+	 * @throws Exception .
 	 */
 	public void run() throws Exception {
 
 		// GENERATE DOCUMENTATIONS IN DOC CLASSES
-		List<DocController> controllers = generateControllers(documentation.classes());
-		
+		List<DocController> controllers = generateControllers(documentation
+				.classes());
+
 		// TRANSLATE DOC CLASSES INTO HTML DOCUMENTATION USING VELOCITY TEMPLATE
 		String generatedHtml = generateHtmlDocumentation(controllers);
 
@@ -149,41 +169,50 @@ public class Generator {
 		try {
 			File file = new File(docPath);
 			File parentFile = file.getParentFile();
-			if(parentFile != null) {
-				if(parentFile.mkdirs())
-					logger.log(Level.FINEST, "The directory " + parentFile.getAbsolutePath() + " was created, along with all necessary parent directories.");
+			if (parentFile != null) {
+				if (parentFile.mkdirs()) {
+					logger.log(
+							Level.FINEST,
+							"The directory "
+									+ parentFile.getAbsolutePath()
+									+ " was created, along with all necessary parent directories.");
+				}
 			}
-			logger.log(Level.INFO, "Write generated velocity to " + file.getAbsolutePath());
+			logger.log(Level.INFO,
+					"Write generated velocity to " + file.getAbsolutePath());
 			velocityfileWriter = new FileWriter(file);
 			velocityfileWriter.write(generatedHtml);
 		} finally {
-			if (velocityfileWriter != null)
+			if (velocityfileWriter != null) {
 				velocityfileWriter.close();
+			}
 		}
 	}
 
 	/**
-	 * Creates the REST API documentation in HTML form,
-	 * using the controllers' data and the velocity template.
+	 * Creates the REST API documentation in HTML form, using the controllers'
+	 * data and the velocity template.
+	 * 
 	 * @param controllers
 	 * @return string that contains the documentation in HTML form.
 	 * @throws Exception
 	 */
-	public String generateHtmlDocumentation(List<DocController> controllers) throws Exception {
+	public String generateHtmlDocumentation(List<DocController> controllers)
+			throws Exception {
 
 		logger.log(Level.INFO, "Generate velocity using template: "
 				+ velocityTemplatePath
-				+ " (" + (isUserDefineTemplatePath
-						? "got template path from user"
+				+ " ("
+				+ (isUserDefineTemplatePath ? "got template path from user"
 						: "default template path") + ")");
 
 		Properties p = new Properties();
 		if (isUserDefineTemplatePath) {
 			p.setProperty("file.resource.loader.path", velocityTemplatePath);
-		}
-		else {
+		} else {
 			p.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-			p.setProperty("classpath.resource.loader.class",ClasspathResourceLoader.class.getName());
+			p.setProperty("classpath.resource.loader.class",
+					ClasspathResourceLoader.class.getName());
 		}
 
 		Velocity.init(p);
@@ -192,12 +221,14 @@ public class Generator {
 
 		ctx.put("controllers", controllers);
 		ctx.put("version", version);
+		ctx.put("docCssPath", docCssPath);
+
 
 		Writer writer = new StringWriter();
-		
+
 		Template template = Velocity.getTemplate(velocityTemplateFileName);
 		template.merge(ctx, writer);
-		
+
 		return writer.toString();
 
 	}
@@ -215,7 +246,8 @@ public class Generator {
 
 	private static DocController generateController(ClassDoc classDoc) {
 		DocController controller = new DocController(classDoc.typeName());
-		List<DocAnnotation> annotations = generateAnnotations(classDoc.annotations());
+		List<DocAnnotation> annotations = generateAnnotations(classDoc
+				.annotations());
 		if (Utils.filterOutControllerClass(classDoc, annotations))
 			return null;
 
@@ -235,31 +267,38 @@ public class Generator {
 		return controller;
 	}
 
-	private static List<DocAnnotation> generateAnnotations(final AnnotationDesc[] annotations) {
+	private static List<DocAnnotation> generateAnnotations(
+			final AnnotationDesc[] annotations) {
 		List<DocAnnotation> docAnnotations = new LinkedList<DocAnnotation>();
 		for (AnnotationDesc annotationDesc : annotations) {
 			docAnnotations.add(Utils.createNewAnnotation(annotationDesc));
 		}
 		return docAnnotations;
 	}
-	
-	private static SortedMap<String, DocMethod> generateMethods(final MethodDoc[] methods) {
+
+	private static SortedMap<String, DocMethod> generateMethods(
+			final MethodDoc[] methods) {
 		SortedMap<String, DocMethod> docMethods = new TreeMap<String, DocMethod>();
 
 		for (MethodDoc methodDoc : methods) {
-			List<DocAnnotation> annotations = generateAnnotations(methodDoc.annotations());
-			DocRequestMappingAnnotation requestMappingAnnotation = Utils.getRequestMappingAnnotation(annotations);
+			List<DocAnnotation> annotations = generateAnnotations(methodDoc
+					.annotations());
+			DocRequestMappingAnnotation requestMappingAnnotation = Utils
+					.getRequestMappingAnnotation(annotations);
 
 			if (requestMappingAnnotation == null) {
 				continue;
 			}
 
-			DocHttpMethod httpMethod = generateHttpMethod(methodDoc, requestMappingAnnotation.getMethod(), annotations);
+			DocHttpMethod httpMethod = generateHttpMethod(methodDoc,
+					requestMappingAnnotation.getMethod(), annotations);
 			String uri = requestMappingAnnotation.getValue();
 
 			if (StringUtils.isBlank(uri)) {
 				throw new IllegalArgumentException(
-						"method " + methodDoc.name() + " is missing request mapping annotation's value (uri).");
+						"method "
+								+ methodDoc.name()
+								+ " is missing request mapping annotation's value (uri).");
 			}
 			// If method uri already exist, add the current httpMethod to the
 			// existing method.
@@ -281,7 +320,8 @@ public class Generator {
 	private static DocHttpMethod generateHttpMethod(MethodDoc methodDoc,
 			String httpMethodName, List<DocAnnotation> annotations) {
 
-		DocHttpMethod httpMethod = new DocHttpMethod(methodDoc.name(), httpMethodName);
+		DocHttpMethod httpMethod = new DocHttpMethod(methodDoc.name(),
+				httpMethodName);
 		httpMethod.setDescription(methodDoc.commentText());
 		httpMethod.setParams(generateParameters(methodDoc));
 		httpMethod.setReturnDetails(generateReturnDetails(methodDoc));
@@ -291,7 +331,6 @@ public class Generator {
 				.getJsonRequestExampleAnnotation(annotations));
 		httpMethod.setPossibleResponseStatuses(Utils
 				.getPossibleResponseStatusesAnnotation(annotations));
-		
 
 		if (StringUtils.isBlank(httpMethod.getHttpMethodName())) {
 			throw new IllegalArgumentException(
@@ -320,7 +359,8 @@ public class Generator {
 	}
 
 	private static DocReturnDetails generateReturnDetails(MethodDoc methodDoc) {
-		DocReturnDetails returnDetails = new DocReturnDetails(methodDoc.returnType());
+		DocReturnDetails returnDetails = new DocReturnDetails(
+				methodDoc.returnType());
 		Tag[] returnTags = methodDoc.tags("return");
 		if (returnTags.length > 0) {
 			returnDetails.setDescription(returnTags[0].text());
