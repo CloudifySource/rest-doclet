@@ -15,13 +15,26 @@
  *******************************************************************************/
 package org.cloudifysource.restDoclet.annotations;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
+
 
 /**
+ * Defines multiple {@link PossibleResponseStatus} annotations for a single object property.<br />
+ * Should be use within the REST's controllers above requestMapping methods 
+ * to specify the possible status responses that will be shown in the REST API documentation. 
+ *  
+ * <p>For example:
+ * <dd><code>PossibleResponseStatuses{PossibleResponseStatus(code = 200, description = "success")
+ * , PossibleResponseStatus(code = 500, description = "error")}</code></p>
  * 
  * @author yael
  *
  */
+@Target({ElementType.METHOD })
+@Documented
 public @interface PossibleResponseStatuses {
-	public int[] codes();
-	public String[] descriptions();
+	PossibleResponseStatus[] responseStatuses();
+	
 }

@@ -15,6 +15,14 @@
  *******************************************************************************/
 package org.cloudifysource.restDoclet.constants;
 
+import org.cloudifysource.restDoclet.docElements.DocAnnotation;
+import org.cloudifysource.restDoclet.docElements.DocJsonRequestExample;
+import org.cloudifysource.restDoclet.docElements.DocJsonResponseExample;
+import org.cloudifysource.restDoclet.docElements.DocPossibleResponseStatusAnnotation;
+import org.cloudifysource.restDoclet.docElements.DocPossibleResponseStatusesAnnotation;
+import org.cloudifysource.restDoclet.docElements.DocRequestMappingAnnotation;
+import org.cloudifysource.restDoclet.docElements.DocRequestParamAnnotation;
+
 
 /**
  * 
@@ -72,8 +80,11 @@ public class RestDocConstants {
 	public static final String JSON_REQUEST_EXAMPLE_COMMENTS = "comments";
 	
 	public static final String POSSIBLE_RESPONSE_STATUSES_ANNOTATION = "PossibleResponseStatuses";
-	public static final String POSSIBLE_RESPONSE_STATUSES_CODES = "codes";
-	public static final String POSSIBLE_RESPONSE_STATUSES_DESCRIPTIONS = "descriptions";
+	public static final String POSSIBLE_RESPONSE_STATUSES_RESPONSE_STATUSES = "responseStatuses";
+	
+	public static final String POSSIBLE_RESPONSE_STATUS_ANNOTATION = "PossibleResponseStatus";
+	public static final String POSSIBLE_RESPONSE_STATUS_CODE = "code";
+	public static final String POSSIBLE_RESPONSE_STATUS_DESCRIPTION = "description";
 
 	public static final String HTTP_MATHOD_GET = "GET";
 	public static final String HTTP_MATHOD_POST = "POST";
@@ -88,6 +99,7 @@ public class RestDocConstants {
 		PATH_VARIABLE,
 		JSON_RESPONSE_EXAMPLE,
 		JSON_REQUEST_EXAMPLE,
+		POSSIBLE_RESPONSE_STATUS,
 		POSSIBLE_RESPONSE_STATUSES,
 		DEFAULT;
 
@@ -108,22 +120,28 @@ public class RestDocConstants {
 				return JSON_RESPONSE_EXAMPLE;
 			else if(JSON_REQUEST_EXAMPLE_ANNOTATION.equals(annotationName))
 				return JSON_REQUEST_EXAMPLE;
+			else if(POSSIBLE_RESPONSE_STATUS_ANNOTATION.equals(annotationName))
+				return POSSIBLE_RESPONSE_STATUS;
 			else if(POSSIBLE_RESPONSE_STATUSES_ANNOTATION.endsWith(annotationName))
 				return POSSIBLE_RESPONSE_STATUSES;
 			else 
 				return DEFAULT;
 		}
-		public String getAnnotationName()
+		public static Class<?> getAnnotationClass(String name)
 		{
-			switch (this)
+			switch (fromName(name))
 			{
-				case CONTROLLER: return CONTROLLER_ANNOTATION;
-				case REQUEST_MAPPING: return REQUEST_MAPPING_ANNOTATION;
-				case REQUEST_PARAM: return REQUEST_PARAMS_ANNOTATION;
-				case REQUEST_BODY: return REQUEST_BODY_ANNOTATION;
-				case RESPONSE_BODY: return RESPONSE_BODY_ANNOTATION;
-				case PATH_VARIABLE: return PATH_VARIABLE_ANNOTATION;
-				default: throw new IllegalArgumentException("Unsupported DocAnnotations: " + this);
+				case REQUEST_MAPPING: return DocRequestMappingAnnotation.class;
+				case REQUEST_PARAM: return DocRequestParamAnnotation.class;
+				case JSON_REQUEST_EXAMPLE: return DocJsonRequestExample.class;
+				case JSON_RESPONSE_EXAMPLE: return DocJsonResponseExample.class;
+				case POSSIBLE_RESPONSE_STATUS: return DocPossibleResponseStatusAnnotation.class;
+				case POSSIBLE_RESPONSE_STATUSES: return DocPossibleResponseStatusesAnnotation.class;
+				case REQUEST_BODY:
+				case RESPONSE_BODY: 
+				case PATH_VARIABLE: 
+				case CONTROLLER: return DocAnnotation.class;
+				default: throw new IllegalArgumentException("Unsupported DocAnnotations: " + name);
 			}
 		}
 

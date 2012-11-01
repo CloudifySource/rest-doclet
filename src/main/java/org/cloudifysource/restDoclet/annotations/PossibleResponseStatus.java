@@ -13,31 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.cloudifysource.restDoclet.docElements;
+package org.cloudifysource.restDoclet.annotations;
 
-public class DocResponseStatus {
-	private final int code;
-	private final String codeName;
-	private final String description;
-	
-	public DocResponseStatus(int code, String codeName, String description) {
-		this.code = code;
-		this.codeName = codeName;
-		this.description = description;
-	}
+import java.lang.annotation.Documented;
+import java.lang.annotation.Target;
 
-	public int getCode() {
-		return code;
-	}
-	public String getCodeName() {
-		return codeName;
-	}
-	public String getDescription() {
-		return description;
-	}	
-	
-	@Override
-	public String toString() {
-		return "\"" + code + " " + codeName + "\" " + description;
-	}
+/**
+ * Defines a response status code and description.<br />
+ *  
+ * <p>For example:
+ * <dd><code>PossibleResponseStatus(code = 200, description = "success")</code></p>
+ *  
+ * @author yael
+ *
+ */
+@Target({ })
+@Documented
+public @interface PossibleResponseStatus {
+	int code();
+	String description() default "";
 }

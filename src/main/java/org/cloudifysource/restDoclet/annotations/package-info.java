@@ -14,6 +14,19 @@
  * limitations under the License.
  *******************************************************************************/
 /**
+ * 
+ * This package contains all the extra annotations needed for creating the REST API documentation:
+ * <ol>
+ * <li> {@link org.cloudifysource.restDoclet.annotations.JsonRequestExample} - an example for Json request,
+ * the request that is sent to the annotated HTTP method.</li>
+ * <li> {@link org.cloudifysource.restDoclet.annotations.JsonResponseExample} - an example for Json response, 
+ * the response of the annotated HTTP method.</li>
+ * <li> {@link org.cloudifysource.restDoclet.annotations.PossibleResponseStatuses} - a list of
+ * {@link org.cloudifysource.restDoclet.annotations.PossibleResponseStatus} annotations.<br />
+ * Each PossibleResponseStatus annotation in the list describes a response status (code and description) 
+ * that might be returned as the response status of the annotated HTTP method.</li>
+ * </ol>
+ * 
  * @author yael
  *
  */

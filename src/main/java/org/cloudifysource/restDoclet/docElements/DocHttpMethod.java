@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.cloudifysource.restDoclet.constants.RestDocConstants.ResponseCodes;
 
 public class DocHttpMethod {
 	private String methodSignatureName;
@@ -36,7 +35,7 @@ public class DocHttpMethod {
 	
 	private DocJsonRequestExample jsonRequestExample;
 	private DocJsonResponseExample jsonResponseExample;
-	private List<DocResponseStatus> possibleResponseStatuses;
+	private List<DocPossibleResponseStatusAnnotation> possibleResponseStatuses;
 	
 	
 	public DocHttpMethod(String methodSignatureName, String requestMethod) {
@@ -107,22 +106,18 @@ public class DocHttpMethod {
 	public void setJsonRequesteExample(DocJsonRequestExample request) {
 		this.jsonRequestExample = request;
 	}
-	public List<DocResponseStatus> getPossibleResponseStatuses() {
+	public List<DocPossibleResponseStatusAnnotation> getPossibleResponseStatuses() {
 		return possibleResponseStatuses;
 	}
-	public void setPossibleResponseStatuses(Integer[] codes, String[] descriptions) {
-		if(this.possibleResponseStatuses == null)
-			this.possibleResponseStatuses = new LinkedList<DocResponseStatus>();
-		for (int i = 0; i < codes.length; i++) {
-			int code = codes[i];
-			DocResponseStatus possibleResponseStatus = new DocResponseStatus(code, ResponseCodes.fromCode(code).getReasonPhrase() , descriptions[i].trim());
-			this.possibleResponseStatuses.add(possibleResponseStatus);
+	public void setPossibleResponseStatuses(final DocPossibleResponseStatusesAnnotation possibleResponseStatusesAnnotation) {
+		if (possibleResponseStatusesAnnotation != null) {
+			this.possibleResponseStatuses = possibleResponseStatusesAnnotation.getResponseStatuses();
 		}
 	}
 
 	@Override
 	public String toString() {
-		String httpMethodShort = httpMethodName.substring(httpMethodName.lastIndexOf('.')+1);
+		String httpMethodShort = httpMethodName.substring(httpMethodName.lastIndexOf('.') + 1);
 		String str = "http method: " + httpMethodShort + "\n";
 		if(StringUtils.isBlank(description))
 			str += "description: " + description + "\n";
@@ -141,7 +136,7 @@ public class DocHttpMethod {
 		
 		if(possibleResponseStatuses != null) {
 			StringBuilder responseStatusStr = new StringBuilder();
-			for (DocResponseStatus responseStatus : possibleResponseStatuses) {
+			for (DocPossibleResponseStatusAnnotation responseStatus : possibleResponseStatuses) {
 				responseStatusStr.append("* ").append(responseStatus).append("\n");
 			}
 			str += "Returns: " + responseStatusStr;

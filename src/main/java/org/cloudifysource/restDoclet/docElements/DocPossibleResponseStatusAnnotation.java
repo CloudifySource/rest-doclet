@@ -15,41 +15,62 @@
  *******************************************************************************/
 package org.cloudifysource.restDoclet.docElements;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.cloudifysource.restDoclet.constants.RestDocConstants;
+import org.cloudifysource.restDoclet.constants.RestDocConstants.ResponseCodes;
 
 /**
  * 
  * @author yael
  *
  */
-public class DocPossibleResponseStatusesAnnotation extends DocAnnotation {
+public class DocPossibleResponseStatusAnnotation extends DocAnnotation {
 
-	private List<DocPossibleResponseStatusAnnotation> responseStatuses;
+	private Integer code;
+	private String codeName;
+	private String description;
 
-	public DocPossibleResponseStatusesAnnotation(final String name) {
+	public DocPossibleResponseStatusAnnotation(final String name) {
 		super(name);
-		responseStatuses = new LinkedList<DocPossibleResponseStatusAnnotation>();
 	}
 
-	public List<DocPossibleResponseStatusAnnotation> getResponseStatuses() {
-		return responseStatuses;
+	public int getCode() {
+		return this.code;
 	}
 
-
+	public String getCodeName() {
+		return codeName;
+	}
+	
+	public String getDescription() {
+		return this.description;
+	}
+	
 	@Override
 	public void addAttribute(final String attrName, final Object attrValue) {
 		String shortAttrName = getShortName(attrName);
-		if (RestDocConstants.POSSIBLE_RESPONSE_STATUSES_RESPONSE_STATUSES.equals(shortAttrName)) {
-			DocPossibleResponseStatusAnnotation[] docPossibleResponseStatusAnnotations = 
-					(DocPossibleResponseStatusAnnotation[]) attrValue;
-			for (DocPossibleResponseStatusAnnotation annotation : docPossibleResponseStatusAnnotations) {
-				this.responseStatuses.add(annotation);
-			}
+		if (RestDocConstants.POSSIBLE_RESPONSE_STATUS_CODE
+				.equals(shortAttrName)) {
+			code = (Integer) attrValue;
+			codeName = ResponseCodes.fromCode(code).getReasonPhrase();
+		} else if (RestDocConstants.POSSIBLE_RESPONSE_STATUS_DESCRIPTION
+				.equals(shortAttrName)) {
+			description = (String) attrValue;
 		}
 		super.addAttribute(attrName, attrValue);
 	}
 
+	@Override
+	public String toString() {
+		String str = "@" + RestDocConstants.POSSIBLE_RESPONSE_STATUS_ANNOTATION + "{";
+		if (code != null) {			
+			str += "code : \"" + code + " " + codeName + "\"";
+		}
+		if (code != null && description != null) {	
+			str += ", ";
+		}
+		if (description != null) {
+			str += "description: " + description;
+		}
+		return str + "}";
+	}
 }

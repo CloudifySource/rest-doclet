@@ -20,7 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.cloudifysource.restDoclet.constants.RestDocConstants.DocAnnotationTypes;
+import org.cloudifysource.restDoclet.generation.Utils;
+
+import com.sun.javadoc.AnnotationDesc;
 import com.sun.javadoc.AnnotationValue;
+import com.sun.tools.javadoc.AnnotationDescImpl;
 
 public class DocAnnotation {
 	private final String name;
@@ -33,46 +38,55 @@ public class DocAnnotation {
 
 	public String getName() {
 		return name;
-	}	
+	}
 
 	protected static String getShortName(String name) {
 		int beginIndex = name.lastIndexOf('.') + 1;
 		int endIndex = name.lastIndexOf("()");
-		if(endIndex == -1)
+		if (endIndex == -1)
 			endIndex = name.length();
 		return name.substring(beginIndex, endIndex);
 	}
 
 	protected static Object getShortValue(Object value) {
-		if(!(value instanceof String))
+		if (!(value instanceof String))
 			return value;
 
-		String strValue = (String)value;
+		String strValue = (String) value;
 
 		int beginIndex = 0;
-		if(strValue.startsWith("\""))
+		if (strValue.startsWith("\""))
 			beginIndex = 1;
 
 		int endIndex = strValue.length();
-		if(strValue.endsWith("\""))
+		if (strValue.endsWith("\"")) {
 			endIndex--;
+		}
 
 		return strValue.substring(beginIndex, endIndex);
 	}
 
 	public static Object constractAttrValue(Object value) {
-		Class<? extends Object> class1 = value.getClass();
-		if(class1.isArray()) {
-			AnnotationValue[] values = (AnnotationValue[])value;
+		if (value.getClass().isArray()) {
+			AnnotationValue[] values = (AnnotationValue[]) value;
 			Object firstValue = values[0].value();
-			Object constractedValues = Array.newInstance(firstValue.getClass(), values.length);
-			for (int i=0 ; i< values.length; i++) {
-				Object currentValue = values[i].value();
+			Object constractedValues = null;
+			if (firstValue instanceof AnnotationDescImpl) {
+				Class<?> annotationClass = 
+						DocAnnotationTypes.getAnnotationClass(
+								((AnnotationDescImpl) firstValue).annotationType().typeName());
+				constractedValues = Array.newInstance(annotationClass, values.length);	
+			} else {
+				constractedValues = Array.newInstance(firstValue.getClass(),
+						values.length);
+			}
+			for (int i = 0; i < values.length; i++) {
+				Object currentValue = constractAttrValue(values[i].value());
 				Array.set(constractedValues, i, currentValue);
 			}
-			//if(values.length == 1)
-			//return firstValue;
 			return constractedValues;
+		} else if (value instanceof AnnotationDesc) {
+			return Utils.createNewAnnotation((AnnotationDesc) value);
 		}
 		return value;
 	}
@@ -84,15 +98,13 @@ public class DocAnnotation {
 	@Override
 	public String toString() {
 		String str = "@" + name;
-		if(attributes != null && attributes.size() > 0) {
+		if (attributes != null && attributes.size() > 0) {
 			StringBuilder attrStr = new StringBuilder();
 			for (Entry<String, Object> entry : attributes.entrySet()) {
-				attrStr.append(entry.getKey())
-				.append("=")
-				.append(entry.getValue().toString())
-				.append(", ");
+				attrStr.append(entry.getKey()).append("=")
+						.append(entry.getValue().toString()).append(", ");
 			}
-			if(attrStr.length() == 0)
+			if (attrStr.length() == 0)
 				str += " {No attributes}";
 			else
 				str += " {" + attrStr.substring(0, str.lastIndexOf(',')) + "}";

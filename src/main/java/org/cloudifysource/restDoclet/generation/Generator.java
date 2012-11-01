@@ -39,14 +39,11 @@ import org.cloudifysource.restDoclet.docElements.DocController;
 import org.cloudifysource.restDoclet.docElements.DocHttpMethod;
 import org.cloudifysource.restDoclet.docElements.DocMethod;
 import org.cloudifysource.restDoclet.docElements.DocParameter;
-import org.cloudifysource.restDoclet.docElements.DocPossibleResponseStatusesAnnotation;
 import org.cloudifysource.restDoclet.docElements.DocRequestMappingAnnotation;
 import org.cloudifysource.restDoclet.docElements.DocReturnDetails;
 
 import com.sun.javadoc.AnnotationDesc;
-import com.sun.javadoc.AnnotationDesc.ElementValuePair;
 import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.Doclet;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.RootDoc;
@@ -238,45 +235,40 @@ public class Generator {
 		return controller;
 	}
 
-	private static List<DocAnnotation> generateAnnotations(AnnotationDesc[] annotations) {
+	private static List<DocAnnotation> generateAnnotations(final AnnotationDesc[] annotations) {
 		List<DocAnnotation> docAnnotations = new LinkedList<DocAnnotation>();
 		for (AnnotationDesc annotationDesc : annotations) {
-			DocAnnotation docAnnotation = Utils.createNewAnnotation(annotationDesc.annotationType().typeName());
-			// add annotation's attributes
-			for (ElementValuePair elementValuePair : annotationDesc.elementValues()) {
-				String element = elementValuePair.element().toString();
-				Object constractAttrValue = DocAnnotation.constractAttrValue(elementValuePair.value().value());
-				docAnnotation.addAttribute(element, constractAttrValue);
-			}
-			docAnnotations.add(docAnnotation);
+			docAnnotations.add(Utils.createNewAnnotation(annotationDesc));
 		}
 		return docAnnotations;
 	}
-
-	private static SortedMap<String, DocMethod> generateMethods(MethodDoc[] methods) {
+	
+	private static SortedMap<String, DocMethod> generateMethods(final MethodDoc[] methods) {
 		SortedMap<String, DocMethod> docMethods = new TreeMap<String, DocMethod>();
 
 		for (MethodDoc methodDoc : methods) {
 			List<DocAnnotation> annotations = generateAnnotations(methodDoc.annotations());
 			DocRequestMappingAnnotation requestMappingAnnotation = Utils.getRequestMappingAnnotation(annotations);
 
-			if (requestMappingAnnotation == null)
+			if (requestMappingAnnotation == null) {
 				continue;
+			}
 
 			DocHttpMethod httpMethod = generateHttpMethod(methodDoc, requestMappingAnnotation.getMethod(), annotations);
 			String uri = requestMappingAnnotation.getValue();
 
-			if (StringUtils.isBlank(uri))
+			if (StringUtils.isBlank(uri)) {
 				throw new IllegalArgumentException(
 						"method " + methodDoc.name() + " is missing request mapping annotation's value (uri).");
+			}
 			// If method uri already exist, add the current httpMethod to the
 			// existing method.
 			// There can be several httpMethods (GET, POST, DELETE) for each
 			// uri.
 			DocMethod docMethod = docMethods.get(uri);
-			if (docMethod != null)
+			if (docMethod != null) {
 				docMethod.addHttpMethod(httpMethod);
-			else {
+			} else {
 				docMethod = new DocMethod(httpMethod);
 				docMethod.setUri(uri);
 			}
@@ -297,27 +289,16 @@ public class Generator {
 				.getJsonResponseExampleAnnotation(annotations));
 		httpMethod.setJsonRequesteExample(Utils
 				.getJsonRequestExampleAnnotation(annotations));
+		httpMethod.setPossibleResponseStatuses(Utils
+				.getPossibleResponseStatusesAnnotation(annotations));
+		
 
-		DocPossibleResponseStatusesAnnotation possibleResponseStatusesAnnotation = Utils
-				.getPossibleResponseStatusesAnnotation(annotations);
-		if (possibleResponseStatusesAnnotation != null) {
-			Integer[] codes = possibleResponseStatusesAnnotation.getCodes();
-			String[] descriptions = possibleResponseStatusesAnnotation.getDescriptions();
-			if (codes == null || descriptions == null || codes.length != descriptions.length)
-				throw new IllegalArgumentException(
-						"In method "
-								+ methodDoc.name()
-								+ ": wrong attributes for annotation @"
-								+ RestDocConstants.POSSIBLE_RESPONSE_STATUSES_DESCRIPTIONS
-								+ ".");
-			httpMethod.setPossibleResponseStatuses(codes, descriptions);
-		}
-
-		if (StringUtils.isBlank(httpMethod.getHttpMethodName()))
+		if (StringUtils.isBlank(httpMethod.getHttpMethodName())) {
 			throw new IllegalArgumentException(
 					"method "
 							+ methodDoc.name()
 							+ " is missing request mapping annotation's method (http method).");
+		}
 
 		return httpMethod;
 	}

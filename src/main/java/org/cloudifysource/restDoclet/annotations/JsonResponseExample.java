@@ -17,21 +17,23 @@ package org.cloudifysource.restDoclet.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 
 /**
- * 
- * Annotation to specify an example of a JSON response.
+ * <p> Annotation to specify an example of a JSON response.<br />
  * Should be use within the REST's controllers above requestMapping methods 
- * to specify an example that will be shown in the REST API documentation. 
+ * to specify an example that will be shown in the REST API documentation.</p>
+ * 
+ * <p>For example:
+ * <dd><code>JsonResponseExample(status = "success",
+ *  responseBody = "{Json map content}", comments = "some comments")</code></p>
+ * 
+ * 
  * @author yael
  *
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD })
 @Documented
 public @interface JsonResponseExample {
 	
