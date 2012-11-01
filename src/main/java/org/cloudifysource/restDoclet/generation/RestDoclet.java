@@ -24,23 +24,32 @@ import com.sun.javadoc.Doclet;
 import com.sun.javadoc.RootDoc;
 
 public class RestDoclet extends Doclet {
-	private static final Logger logger = Logger.getLogger(RestDoclet.class.getName());
+	private static final Logger logger = Logger.getLogger(RestDoclet.class
+			.getName());
 
+	/**
+	 * 
+	 * @param root
+	 * @return true for 
+	 */
 	public static boolean start(final RootDoc root) {
-		try{
+		try {
 			new Generator(root).run();
-			logger.log(Level.INFO, "REST API documentation was successfully generated.");
+			logger.log(Level.INFO,
+					"REST API documentation was successfully generated.");
 			return true;
-		}
-		catch(Exception e) {
-			logger.log(Level.SEVERE, "Failed to generate REST API documentation: " + e.getMessage());
+		} catch (Exception e) {
+			logger.log(
+					Level.SEVERE,
+					"Failed to generate REST API documentation: "
+							+ e.getMessage());
 			e.printStackTrace();
 			return false;
 		}
 	}
 
-	public static int optionLength(String option) {
-		if(RestDocConstants.VELOCITY_TEMPLATE_PATH_FLAG.equals(option)
+	public static int optionLength(final String option) {
+		if (RestDocConstants.VELOCITY_TEMPLATE_PATH_FLAG.equals(option)
 				|| RestDocConstants.DOC_DEST_PATH_FLAG.equals(option)
 				|| RestDocConstants.VERSION_FLAG.equals(option)
 				|| RestDocConstants.DOC_CSS_PATH_FLAG.equals(option)) {
@@ -48,7 +57,5 @@ public class RestDoclet extends Doclet {
 		}
 		return 0;
 	}
-	
-	
 
 }

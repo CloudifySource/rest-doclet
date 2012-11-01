@@ -112,18 +112,35 @@ public class Generator {
 	private void setFlags(final String[][] options) {
 		int flagPos = 0;
 		int contentPos = 1;
+		String optionsStr = "";
+		for (String[] strings : options) {
+			for (String string : strings) {
+				optionsStr += string + " ";
+			}
+			optionsStr += ",\n";
+		}
+		logger.log(Level.INFO, "setFlags! options are: " + optionsStr);
+
 		for (int i = 0; i < options.length; i++) {
 			String flagName = options[i][flagPos];
-			String flagValue = options[i][contentPos];
+			String flagValue = null;
+			if (options[i].length > 1) {
+				flagValue = options[i][contentPos];
+			}
 			if (RestDocConstants.VELOCITY_TEMPLATE_PATH_FLAG.equals(flagName)) {
 				velocityTemplatePath = flagValue;
 				isUserDefineTemplatePath = true;
+				logger.log(Level.INFO, "Updating flag " + flagName + " value = " + flagValue);
 			} else if (RestDocConstants.DOC_DEST_PATH_FLAG.equals(flagName)) {
 				docPath = flagValue;
+				logger.log(Level.INFO, "Updating flag " + flagName + " value = " + flagValue);
 			} else if (RestDocConstants.VERSION_FLAG.equals(flagName)) {
+				System.out.println("restVersion found! name = " + flagName + ", value = "+ flagValue);
 				version = flagValue;
+				logger.log(Level.INFO, "Updating flag " + flagName + " value = " + flagValue);
 			} else if (RestDocConstants.DOC_CSS_PATH_FLAG.equals(flagName)) {
 				docCssPath = flagValue;
+				logger.log(Level.INFO, "Updating flag " + flagName + " value = " + flagValue);
 			}
 		}
 
