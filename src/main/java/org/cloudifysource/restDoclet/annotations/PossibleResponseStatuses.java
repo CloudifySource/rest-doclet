@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
 
 
 /**
- * Defines multiple {@link PossibleResponseStatus} annotations for a single object property.<br />
+ * Defines multiple {@link PossibleResponseStatus} annotations for a single HTTP method.<br />
  * Should be use within the REST's controllers above requestMapping methods 
  * to specify the possible status responses that will be shown in the REST API documentation. 
  *  
