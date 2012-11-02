@@ -55,9 +55,7 @@ public class DocRequestParamAnnotation extends DocAnnotation {
 	
 	@Override
 	public String toString() {
-		String str = "@" + RestDocConstants.REQUEST_PARAMS_ANNOTATION;
-		if(value != null || defaultValue != null || requierd != null)
-			str += "{";
+		String str = "@" + RestDocConstants.REQUEST_PARAMS_ANNOTATION + "{";
 		if(value != null)
 			str	+= RestDocConstants.REQUEST_PARAMS_VALUE + " = \"" + value + "\"";
 		if(defaultValue != null)

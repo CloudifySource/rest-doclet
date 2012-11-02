@@ -135,7 +135,6 @@ public class Generator {
 				docPath = flagValue;
 				logger.log(Level.INFO, "Updating flag " + flagName + " value = " + flagValue);
 			} else if (RestDocConstants.VERSION_FLAG.equals(flagName)) {
-				System.out.println("restVersion found! name = " + flagName + ", value = "+ flagValue);
 				version = flagValue;
 				logger.log(Level.INFO, "Updating flag " + flagName + " value = " + flagValue);
 			} else if (RestDocConstants.DOC_CSS_PATH_FLAG.equals(flagName)) {

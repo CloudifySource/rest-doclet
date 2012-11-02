@@ -53,7 +53,11 @@
 							#foreach($docParameter in $params)
 								<tr>
 									<td>$docParameter.getType()</td>
-									<td>$docParameter.getName()</td>
+									#if($docParameter.getRequestParamAnnotation() && $docParameter.getRequestParamAnnotation().getValue() && !$docParameter.getRequestParamAnnotation().getValue().isEmpty())
+										<td>$docParameter.getRequestParamAnnotation().getValue()</td>
+									#else
+										<td>$docParameter.getName()</td>
+									#end
 									#if($docParameter.getDescription())
 										<td>$docParameter.getDescription().replace(".", "")</td>
 									#else
