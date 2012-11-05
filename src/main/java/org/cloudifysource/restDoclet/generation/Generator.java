@@ -254,13 +254,13 @@ public class Generator {
 
 	private static List<DocController> generateControllers(final ClassDoc classDoc) {
 		List<DocController> controllers = new LinkedList<DocController>();		
-		String controllerClassName = classDoc.typeName();
-
 		List<DocAnnotation> annotations = generateAnnotations(classDoc.annotations());
+		
 		if (Utils.filterOutControllerClass(classDoc, annotations)) {
 			return null;
 		}
 
+		String controllerClassName = classDoc.typeName();
 		DocRequestMappingAnnotation requestMappingAnnotation = Utils.getRequestMappingAnnotation(annotations);
 		if (requestMappingAnnotation == null) {
 			throw new IllegalArgumentException("controller class " + controllerClassName 
@@ -303,15 +303,15 @@ public class Generator {
 		SortedMap<String, DocMethod> docMethods = new TreeMap<String, DocMethod>();
 
 		for (MethodDoc methodDoc : methods) {
-			List<DocAnnotation> annotations = generateAnnotations(methodDoc
-					.annotations());
-			DocRequestMappingAnnotation requestMappingAnnotation = Utils
-					.getRequestMappingAnnotation(annotations);
+			List<DocAnnotation> annotations = generateAnnotations(methodDoc.annotations());
+			
 			// Does not handle methods without a RequestMapping annotation.
-			if (requestMappingAnnotation == null) {
+			if (Utils.filterOutMethod(methodDoc, annotations)) {
 				continue;
 			}
 			// get all HTTP methods
+			DocRequestMappingAnnotation requestMappingAnnotation = Utils
+					.getRequestMappingAnnotation(annotations);
 			String[] methodArray = requestMappingAnnotation.getMethod();
 			DocHttpMethod[] docHttpMethodArray = new DocHttpMethod[methodArray.length];
 			for (int i = 0; i < methodArray.length; i++) {

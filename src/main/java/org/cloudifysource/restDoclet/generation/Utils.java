@@ -221,6 +221,16 @@ public final class Utils {
 		// !(classDoc.qualifiedTypeName().equals(RestDocConstants.SERVICE_CONTROLLER_CLASS_NAME));
 	}
 
+	/**
+	 * 
+	 * @param methodDoc .
+	 * @param annotations .
+	 * @return true if the class should be filtered out, false otherwise.
+	 */
+	protected static boolean filterOutMethod(final MethodDoc methodDoc,
+			final List<DocAnnotation> annotations) {
+		return (getAnnotation(annotations, RestDocConstants.REQUEST_MAPPING_ANNOTATION) == null);
+	}
 	
 	@SuppressWarnings("unused")
 	private static void printMethodsToFile(final List<DocController> controllers,
