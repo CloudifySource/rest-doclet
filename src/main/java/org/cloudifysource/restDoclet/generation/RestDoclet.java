@@ -23,14 +23,19 @@ import org.cloudifysource.restDoclet.constants.RestDocConstants;
 import com.sun.javadoc.Doclet;
 import com.sun.javadoc.RootDoc;
 
+/**
+ * 
+ * @author yael
+ *
+ */
 public class RestDoclet extends Doclet {
 	private static final Logger logger = Logger.getLogger(RestDoclet.class
 			.getName());
 
 	/**
 	 * 
-	 * @param root
-	 * @return true for 
+	 * @param root .
+	 * @return true on success. 
 	 */
 	public static boolean start(final RootDoc root) {
 		try {
@@ -48,6 +53,11 @@ public class RestDoclet extends Doclet {
 		}
 	}
 
+	/**
+	 * 
+	 * @param option .
+	 * @return The number of separate pieces or tokens in the option.
+	 */
 	public static int optionLength(final String option) {
 		if (RestDocConstants.VELOCITY_TEMPLATE_PATH_FLAG.equals(option)
 				|| RestDocConstants.DOC_DEST_PATH_FLAG.equals(option)

@@ -18,40 +18,67 @@ package org.cloudifysource.restDoclet.docElements;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * 
+ * @author yael
+ *
+ */
 public class DocMethod {
 	private String uri;
 	private String description;
 	private final List<DocHttpMethod> httpMethods;
-	public DocMethod(DocHttpMethod httpMethod) {
+	
+	
+	public DocMethod(final DocHttpMethod httpMethod) {
 		httpMethods = new LinkedList<DocHttpMethod>();
 		httpMethods.add(httpMethod);
 	}
+	public DocMethod(final DocHttpMethod[] httpMethodArray) {
+		httpMethods = new LinkedList<DocHttpMethod>();
+		for (DocHttpMethod docHttpMethod : httpMethodArray) {			
+			httpMethods.add(docHttpMethod);
+		}
+	}
+	
 	public String getUri() {
 		return uri;
 	}
-	public void setUri(String uri) {
+	public void setUri(final String uri) {
 		this.uri = uri;
 	}
 	public List<DocHttpMethod> getHttpMethods() {
 		return httpMethods;
 	}
-	public void addHttpMethod(DocHttpMethod httpMethod) {
+	/** 
+	 * 
+	 * @param httpMethod .
+	 */
+	public void addHttpMethod(final DocHttpMethod httpMethod) {
 		this.httpMethods.add(httpMethod);
+	}
+	/**
+	 * 
+	 * @param httpMethodArray An array of HTTP methods.
+	 */
+	public void addHttpMethods(final DocHttpMethod[] httpMethodArray) {
+		for (DocHttpMethod docHttpMethod : httpMethodArray) {			
+			this.httpMethods.add(docHttpMethod);
+		}
 	}
 	public String getDescription() {
 		return description;
 	}
-	public void setDescription(String description) {
+	public void setDescription(final String description) {
 		this.description = description;
 	}
 
 	@Override
 	public String toString() {
 		String str = "\nmapping: " + uri + "\n";
-		if(description != null && !description.isEmpty()) {
+		if (description != null && !description.isEmpty()) {
 			str += "description: \n" + description + "\n";
 		}
-		if(httpMethods != null) {
+		if (httpMethods != null) {
 			str += "httpMethods:\n";
 			StringBuilder httpMethodsStr = new StringBuilder();
 			for (DocHttpMethod httpMethod : httpMethods) {

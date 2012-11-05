@@ -21,17 +21,21 @@ import org.cloudifysource.restDoclet.constants.RestDocConstants.DocAnnotationTyp
 
 import com.sun.javadoc.Type;
 
+/**
+ * 
+ * @author yael
+ *
+ */
 public class DocParameter {
 	private final Type type;
 	private final String name;
 	private String description;
 	private String location;
-	
+
 	private List<DocAnnotation> annotations;
 	private DocRequestParamAnnotation requestParamAnnotation;
 
-
-	public DocParameter(String name, Type type) {
+	public DocParameter(final String name, final Type type) {
 		this.name = name;
 		this.type = type;
 	}
@@ -39,58 +43,89 @@ public class DocParameter {
 	public Type getType() {
 		return type;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public String getDescription() {
 		return description;
 	}
-	public void setDescription(String description) {
+
+	public void setDescription(final String description) {
 		this.description = description;
 	}
+
+	/**
+	 * 
+	 * @return The value of the required attribute of the RequestParam annotation.
+	 */
 	public Boolean isRequired() {
-		if(requestParamAnnotation != null)
-			return requestParamAnnotation.isRequierd() == null ? Boolean.FALSE : requestParamAnnotation.isRequierd();
+		if (requestParamAnnotation != null) {
+			return requestParamAnnotation.isRequierd() == null ? Boolean.FALSE
+					: requestParamAnnotation.isRequierd();
+		}
 		return Boolean.TRUE;
 	}
+
 	public List<DocAnnotation> getAnnotations() {
 		return annotations;
 	}
 
-	public void setAnnotations(List<DocAnnotation> annotations) {
-			this.annotations = annotations;
-			setAnnotationsAttributes();
+	/**
+	 * 
+	 * @param annotations .
+	 */
+	public void setAnnotations(final List<DocAnnotation> annotations) {
+		this.annotations = annotations;
+		setAnnotationsAttributes();
 	}
+
 	public String getLocation() {
 		return location;
 	}
 
+	/**
+	 * 
+	 * @return The value of the defaultValue attribute of the RequestParam annotation.
+	 */
 	public String getDefaultValue() {
-		if(requestParamAnnotation != null )
+		if (requestParamAnnotation != null) {
 			return requestParamAnnotation.getDefaultValue();
+		}
 		return null;
 	}
+
 	public DocRequestParamAnnotation getRequestParamAnnotation() {
 		return requestParamAnnotation;
 	}
 
 	private void setAnnotationsAttributes() {
-		if(annotations == null)
+		if (annotations == null) {
 			return;
+		}
 		String currLocation = "";
 		for (DocAnnotation docAnnotation : annotations) {
 			String annotationName = docAnnotation.getName();
-			if(!currLocation.isEmpty())
+			if (!currLocation.isEmpty()) {
 				currLocation += " or ";
-			currLocation += annotationName;
-			DocAnnotationTypes docAnnotationType = DocAnnotationTypes.fromName(annotationName);
-			if(docAnnotationType == DocAnnotationTypes.REQUEST_PARAM) {
-				if(!(docAnnotation instanceof DocRequestParamAnnotation)) 
-					throw new ClassCastException("Annotation type is " + DocAnnotationTypes.REQUEST_PARAM + ", expected class type to be " +  DocRequestParamAnnotation.class.getName());
-					requestParamAnnotation = (DocRequestParamAnnotation) docAnnotation;
 			}
-			else if(docAnnotationType != DocAnnotationTypes.PATH_VARIABLE && docAnnotationType != DocAnnotationTypes.REQUEST_BODY)
-				throw new IllegalArgumentException("Unsupported parameter annotation - " + annotationName);
+			currLocation += annotationName;
+			DocAnnotationTypes docAnnotationType = DocAnnotationTypes
+					.fromName(annotationName);
+			if (docAnnotationType == DocAnnotationTypes.REQUEST_PARAM) {
+				if (!(docAnnotation instanceof DocRequestParamAnnotation)) {
+					throw new ClassCastException("Annotation type is "
+							+ DocAnnotationTypes.REQUEST_PARAM
+							+ ", expected class type to be "
+							+ DocRequestParamAnnotation.class.getName());
+				}
+				requestParamAnnotation = (DocRequestParamAnnotation) docAnnotation;
+			} else if (docAnnotationType != DocAnnotationTypes.PATH_VARIABLE
+					&& docAnnotationType != DocAnnotationTypes.REQUEST_BODY) {
+				throw new IllegalArgumentException(
+						"Unsupported parameter annotation - " + annotationName);
+			}
 		}
 		this.location = currLocation;
 	}
@@ -98,15 +133,17 @@ public class DocParameter {
 	@Override
 	public String toString() {
 		String str = "Parameter[";
-		if(annotations !=null) {
-			if(annotations.size() == 1)
-				str += annotations.get(0) + ", "; 
-			else
+		if (annotations != null) {
+			if (annotations.size() == 1) {
+				str += annotations.get(0) + ", ";
+			} else {
 				str += annotations + ", ";
+			}
 		}
 		str += "type = " + type + ", name = " + name;
-		if(description != null)
+		if (description != null) {
 			str += description;
+		}
 		return str + "]";
 	}
 

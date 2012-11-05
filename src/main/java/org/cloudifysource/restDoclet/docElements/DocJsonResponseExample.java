@@ -20,15 +20,18 @@ import java.io.IOException;
 import org.apache.commons.lang.StringUtils;
 import org.cloudifysource.restDoclet.constants.RestDocConstants;
 import org.cloudifysource.restDoclet.generation.Utils;
-import org.codehaus.jackson.JsonParseException;
 
-
-public class DocJsonResponseExample extends DocAnnotation{
+/**
+ * 
+ * @author yael
+ *
+ */
+public class DocJsonResponseExample extends DocAnnotation {
 	private String status;
 	private String response;
 	private String comments;
 
-	public DocJsonResponseExample(String name) {
+	public DocJsonResponseExample(final String name) {
 		super(name);
 	}
 	
@@ -36,13 +39,17 @@ public class DocJsonResponseExample extends DocAnnotation{
 		return comments;
 	}
 	
-	public String generateJsonResponseBody() throws JsonParseException, IOException {
+	/**
+	 * 
+	 * @return The response body in Json format.
+	 * @throws IOException .
+	 */
+	public String generateJsonResponseBody() throws IOException {
 		String jsonResponseBody = "{\"status\": \"" + status + "\"";
 		
 		if (StringUtils.isBlank(response)) {
 			jsonResponseBody += "}";
-		}
-		else {
+		} else {
 			jsonResponseBody += ",\"response\": " + response + "}";
 			jsonResponseBody = Utils.getIndentJson(jsonResponseBody);
 		}
@@ -51,7 +58,7 @@ public class DocJsonResponseExample extends DocAnnotation{
 	}
 
 	@Override
-	public void addAttribute(String attrName, Object attrValue) {
+	public void addAttribute(final String attrName, final Object attrValue) {
 		String value = attrValue.toString().replace("\\\"", "\"").trim();
 
 //		if(value.startsWith("\"") && value.endsWith("\""))
@@ -59,13 +66,14 @@ public class DocJsonResponseExample extends DocAnnotation{
 		
 		String shortAttrName = getShortName(attrName);
 
-		if(RestDocConstants.JSON_RESPONSE_EXAMPLE_STATUS.equals(shortAttrName))
+		if (RestDocConstants.JSON_RESPONSE_EXAMPLE_STATUS.equals(shortAttrName)) {
 			status = value;
-		if(RestDocConstants.JSON_RESPONSE_EXAMPLE_RESPONSE.equals(shortAttrName)) {
-			response = value;
 		}
-		else if(RestDocConstants.JSON_RESPONSE_EXAMPLE_COMMENTS.equals(shortAttrName))
+		if (RestDocConstants.JSON_RESPONSE_EXAMPLE_RESPONSE.equals(shortAttrName)) {
+			response = value;
+		} else if (RestDocConstants.JSON_RESPONSE_EXAMPLE_COMMENTS.equals(shortAttrName)) {
 			comments = value;
+		}
 
 		super.addAttribute(shortAttrName, value);
 	}
@@ -73,10 +81,12 @@ public class DocJsonResponseExample extends DocAnnotation{
 	@Override
 	public String toString() {
 		String str = "@" + RestDocConstants.JSON_RESPONSE_EXAMPLE_ANNOTATION + "[status = " + status;
-		if(!StringUtils.isBlank(response))
+		if (!StringUtils.isBlank(response)) {
 			str += ", response = " + response;
-		if(!StringUtils.isBlank(comments))
+		}
+		if (!StringUtils.isBlank(comments)) {
 			str += ", comments = " + comments;
+		}
 		return str + "]";
 	}
 }

@@ -18,13 +18,18 @@ package org.cloudifysource.restDoclet.docElements;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 
+/**
+ * This class represents a Controller class.
+ * @author yael
+ *
+ */
 public class DocController {
 	private String name;
 	private String uri;
 	private String description;
 	private SortedMap<String, DocMethod> methods;
 
-	public DocController(String name) {
+	public DocController(final String name) {
 		this.name = name;
 	}
 
@@ -36,7 +41,7 @@ public class DocController {
 		return uri;
 	}
 
-	public void setUri(String uri) {
+	public void setUri(final String uri) {
 		this.uri = uri;
 	}
 
@@ -44,7 +49,7 @@ public class DocController {
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public void setDescription(final String description) {
 		this.description = description;
 	}
 
@@ -52,15 +57,17 @@ public class DocController {
 		return methods;
 	}
 
-	public void setMethods(SortedMap<String, DocMethod> methods) {
+	public void setMethods(final SortedMap<String, DocMethod> methods) {
 		this.methods = methods;
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder("Controller " + name + " uri = " + uri + "\n");
-		if (description != null && !description.isEmpty())
-			builder.append(description + "\n");		
+		StringBuilder builder = new StringBuilder("Controller " + name + ", URI = " + uri + "\n");
+		builder.substring(0, builder.length() - 1);
+		if (description != null && !description.isEmpty()) {
+			builder.append(description + "\n");
+		}		
 		if (methods != null) {
 			for (Entry<String, DocMethod> entry : methods.entrySet()) {
 				builder.append(entry.getValue().toString() + "\n");

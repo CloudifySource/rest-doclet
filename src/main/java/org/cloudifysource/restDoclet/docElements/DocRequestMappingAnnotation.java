@@ -19,81 +19,112 @@ import org.cloudifysource.restDoclet.constants.RestDocConstants;
 
 import com.sun.tools.javadoc.FieldDocImpl;
 
+/**
+ * 
+ * @author yael
+ *
+ */
 public class DocRequestMappingAnnotation extends DocAnnotation {
-	private String value;
-	private String method;
-	private String headers;
-	private String params;
-	private String produces;
-	private String consumes;
-	
-	public DocRequestMappingAnnotation(String name) {
+	private String[] value;
+	private String[] method;
+	private String[] headers;
+	private String[] params;
+	private String[] produces;
+	private String[] consumes;
+
+	public DocRequestMappingAnnotation(final String name) {
 		super(name);
 	}
-	public String getValue() {
+
+	public String[] getValue() {
 		return value;
 	}
-	public String getMethod() {
+
+	public String[] getMethod() {
 		return method;
 	}
-	public String getHeaders() {
+
+	public String[] getHeaders() {
 		return headers;
 	}
-	public String getParams() {
+
+	public String[] getParams() {
 		return params;
 	}
-	public String getProduces() {
+
+	public String[] getProduces() {
 		return produces;
 	}
-	public String getConsumes() {
+
+	public String[] getConsumes() {
 		return consumes;
 	}
 
 	@Override
-	public void addAttribute(String attrName, Object attrValue) {
-		Object shortAttrValue = getShortValue(attrValue);
-		String shortAttrValueStr = null;
-		Class<? extends Object> class1 = shortAttrValue.getClass();
-		if(class1.isArray() && String.class.equals(class1.getComponentType()))
-			shortAttrValueStr = ((String[]) shortAttrValue)[0].trim();
-		else if((shortAttrValue instanceof String))
-			shortAttrValueStr = ((String) shortAttrValue).trim();
+	public void addAttribute(final String attrName, final Object attrValue) {
 		String shortAttrName = getShortName(attrName);
-		
-		if(RestDocConstants.REQUEST_MAPPING_VALUE.equals(shortAttrName)) 
-			value = shortAttrValueStr.startsWith("/") ? shortAttrValueStr : ("/" + shortAttrValueStr);
-		if(RestDocConstants.REQUEST_MAPPING_METHOD.equals(shortAttrName))
-			method = (((FieldDocImpl[]) attrValue)[0]).name();
-		if(RestDocConstants.REQUEST_MAPPING_HEADERS.equals(shortAttrName))
-			headers = shortAttrValueStr;
-		if(RestDocConstants.REQUEST_MAPPING_PARAMS.equals(shortAttrName))
-			params = shortAttrValueStr;
-		if(RestDocConstants.REQUEST_MAPPING_PRODUCES.equals(shortAttrName))
-			produces = shortAttrValueStr;
-		if(RestDocConstants.REQUEST_MAPPING_CONSUMED.equals(shortAttrName))
-			consumes = shortAttrValueStr;
-		
-		super.addAttribute(shortAttrName, shortAttrValue);
+
+		if (RestDocConstants.REQUEST_MAPPING_VALUE.equals(shortAttrName)) {
+			String[] valueArray = (String[]) attrValue;
+			value = new String[valueArray.length];
+			for (int i = 0; i < valueArray.length; i++) {
+				String valueStr = valueArray[i];
+				if (valueStr.endsWith("/")) {
+					valueStr = valueStr.substring(0, valueStr.length() - 1);
+				}
+				value[i] = valueStr.startsWith("/") ? valueStr
+						: ("/" + valueStr);
+			}
+		}
+		if (RestDocConstants.REQUEST_MAPPING_METHOD.equals(shortAttrName)) {
+			FieldDocImpl[] methodArray = (FieldDocImpl[]) attrValue;
+			method = new String[methodArray.length];
+			for (int i = 0; i < methodArray.length; i++) {
+				method[i] = methodArray[i].name();
+			}
+		}
+		if (RestDocConstants.REQUEST_MAPPING_HEADERS.equals(shortAttrName)) {
+			headers = ((String[]) attrValue);
+		}
+		if (RestDocConstants.REQUEST_MAPPING_PARAMS.equals(shortAttrName)) {
+			params = ((String[]) attrValue);
+		}
+		if (RestDocConstants.REQUEST_MAPPING_PRODUCES.equals(shortAttrName)) {
+			produces = ((String[]) attrValue);
+		}
+		if (RestDocConstants.REQUEST_MAPPING_CONSUMED.equals(shortAttrName)) {
+			consumes = ((String[]) attrValue);
+		}
+
+		super.addAttribute(shortAttrName, attrValue);
 	}
-	
+
+	private String getStringArray(final String title, final String[] array) {
+		if (array == null || array.length == 0) {
+			return "";
+		}
+		String str = title + " = {\"";
+		for (String element : array) {				
+			str += element + "\",";
+		}
+		str = str.substring(0, str.length() - 1);
+		return str + "}, ";
+	}
+
 	@Override
 	public String toString() {
-			String str = "@" + RestDocConstants.REQUEST_MAPPING_ANNOTATION + "{";
-			if(value != null)
-				str	+= RestDocConstants.REQUEST_MAPPING_VALUE + " = \"" + value + "\", ";
-			if(method != null)
-				str	+= RestDocConstants.REQUEST_MAPPING_METHOD + " = \"" + method + "\", ";
-			if(headers != null)
-				str	+= RestDocConstants.REQUEST_MAPPING_HEADERS + " = \"" + headers + "\", ";
-			if(params != null)
-				str	+= RestDocConstants.REQUEST_MAPPING_PARAMS + " = \"" + params + "\", ";
-			if(produces != null)
-				str	+= RestDocConstants.REQUEST_MAPPING_PRODUCES + " = \"" + produces + "\", ";
-			if(consumes != null)
-				str	+= RestDocConstants.REQUEST_MAPPING_CONSUMED + " = \"" + consumes + "\", ";
-			int lastIndexOf = str.lastIndexOf(',');
-			if(lastIndexOf != -1)
-				str = str.substring(0, lastIndexOf);
-			return str + "}";
+		String str = "@" + RestDocConstants.REQUEST_MAPPING_ANNOTATION 
+				+ "{"
+				+ getStringArray(RestDocConstants.REQUEST_MAPPING_VALUE, value)
+				+ getStringArray(RestDocConstants.REQUEST_MAPPING_METHOD, method)
+				+ getStringArray(RestDocConstants.REQUEST_MAPPING_HEADERS, headers)
+				+ getStringArray(RestDocConstants.REQUEST_MAPPING_PARAMS, params)
+				+ getStringArray(RestDocConstants.REQUEST_MAPPING_PRODUCES, produces)
+				+ getStringArray(RestDocConstants.REQUEST_MAPPING_CONSUMED, consumes);
+		int lastIndexOf = str.lastIndexOf(',');
+		if (lastIndexOf != -1) {
+			str = str.substring(0, lastIndexOf);
+		}
+		return str + "}";
 	}
 }

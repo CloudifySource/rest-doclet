@@ -27,11 +27,16 @@ import com.sun.javadoc.AnnotationDesc;
 import com.sun.javadoc.AnnotationValue;
 import com.sun.tools.javadoc.AnnotationDescImpl;
 
+/**
+ * 
+ * @author yael
+ *
+ */
 public class DocAnnotation {
 	private final String name;
 	private final Map<String, Object> attributes;
 
-	public DocAnnotation(String name) {
+	public DocAnnotation(final String name) {
 		this.name = name;
 		attributes = new HashMap<String, Object>();
 	}
@@ -40,33 +45,26 @@ public class DocAnnotation {
 		return name;
 	}
 
-	protected static String getShortName(String name) {
+	/**
+	 * 
+	 * @param name .
+	 * @return The name without . or ().
+	 */
+	protected static String getShortName(final String name) {
 		int beginIndex = name.lastIndexOf('.') + 1;
 		int endIndex = name.lastIndexOf("()");
-		if (endIndex == -1)
+		if (endIndex == -1) {
 			endIndex = name.length();
+		}
 		return name.substring(beginIndex, endIndex);
 	}
 
-	protected static Object getShortValue(Object value) {
-		if (!(value instanceof String))
-			return value;
-
-		String strValue = (String) value;
-
-		int beginIndex = 0;
-		if (strValue.startsWith("\""))
-			beginIndex = 1;
-
-		int endIndex = strValue.length();
-		if (strValue.endsWith("\"")) {
-			endIndex--;
-		}
-
-		return strValue.substring(beginIndex, endIndex);
-	}
-
-	public static Object constractAttrValue(Object value) {
+	/**
+	 * 
+	 * @param value .
+	 * @return Construct the value.
+	 */
+	public static Object constructAttrValue(final Object value) {
 		if (value.getClass().isArray()) {
 			AnnotationValue[] values = (AnnotationValue[]) value;
 			Object firstValue = values[0].value();
@@ -81,7 +79,7 @@ public class DocAnnotation {
 						values.length);
 			}
 			for (int i = 0; i < values.length; i++) {
-				Object currentValue = constractAttrValue(values[i].value());
+				Object currentValue = constructAttrValue(values[i].value());
 				Array.set(constractedValues, i, currentValue);
 			}
 			return constractedValues;
@@ -91,7 +89,12 @@ public class DocAnnotation {
 		return value;
 	}
 
-	public void addAttribute(String attrName, Object attrValue) {
+	/**
+	 * 
+	 * @param attrName .
+	 * @param attrValue .
+	 */
+	public void addAttribute(final String attrName, final Object attrValue) {
 		attributes.put(getShortName(attrName), attrValue);
 	}
 
@@ -104,10 +107,11 @@ public class DocAnnotation {
 				attrStr.append(entry.getKey()).append("=")
 						.append(entry.getValue().toString()).append(", ");
 			}
-			if (attrStr.length() == 0)
+			if (attrStr.length() == 0) {
 				str += " {No attributes}";
-			else
+			} else {
 				str += " {" + attrStr.substring(0, str.lastIndexOf(',')) + "}";
+			}
 		}
 		return str;
 	}

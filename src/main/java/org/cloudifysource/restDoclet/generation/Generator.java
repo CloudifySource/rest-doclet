@@ -112,14 +112,6 @@ public class Generator {
 	private void setFlags(final String[][] options) {
 		int flagPos = 0;
 		int contentPos = 1;
-		String optionsStr = "";
-		for (String[] strings : options) {
-			for (String string : strings) {
-				optionsStr += string + " ";
-			}
-			optionsStr += ",\n";
-		}
-		logger.log(Level.INFO, "setFlags! options are: " + optionsStr);
 
 		for (int i = 0; i < options.length; i++) {
 			String flagName = options[i][flagPos];
@@ -129,7 +121,6 @@ public class Generator {
 			}
 			if (RestDocConstants.VELOCITY_TEMPLATE_PATH_FLAG.equals(flagName)) {
 				velocityTemplatePath = flagValue;
-				isUserDefineTemplatePath = true;
 				logger.log(Level.INFO, "Updating flag " + flagName + " value = " + flagValue);
 			} else if (RestDocConstants.DOC_DEST_PATH_FLAG.equals(flagName)) {
 				docPath = flagValue;
@@ -144,9 +135,9 @@ public class Generator {
 		}
 
 		if (velocityTemplatePath != null) {
+			isUserDefineTemplatePath = true;
 			int fileNameIndex = velocityTemplatePath.lastIndexOf(File.separator) + 1;
-			velocityTemplateFileName = velocityTemplatePath
-					.substring(fileNameIndex);
+			velocityTemplateFileName = velocityTemplatePath.substring(fileNameIndex);
 			velocityTemplatePath = velocityTemplatePath.substring(0, fileNameIndex - 1);
 		} else {
 			velocityTemplateFileName = RestDocConstants.VELOCITY_TEMPLATE_FILE_NAME;
@@ -157,11 +148,11 @@ public class Generator {
 		if (docPath == null) {
 			docPath = RestDocConstants.DOC_DEST_PATH;
 		}
-		
+
 		if (version == null) {
 			version = RestDocConstants.VERSION;
 		}
-		
+
 		if (docCssPath == null) {
 			docCssPath = RestDocConstants.DOC_CSS_PATH;
 		}
@@ -209,18 +200,18 @@ public class Generator {
 	 * Creates the REST API documentation in HTML form, using the controllers'
 	 * data and the velocity template.
 	 * 
-	 * @param controllers
+	 * @param controllers .
 	 * @return string that contains the documentation in HTML form.
-	 * @throws Exception
+	 * @throws Exception .
 	 */
-	public String generateHtmlDocumentation(List<DocController> controllers)
+	public String generateHtmlDocumentation(final List<DocController> controllers)
 			throws Exception {
 
 		logger.log(Level.INFO, "Generate velocity using template: "
 				+ velocityTemplatePath
-				+ " ("
-				+ (isUserDefineTemplatePath ? "got template path from user"
-						: "default template path") + ")");
+				+ (isUserDefineTemplatePath ? File.separator 
+						+ velocityTemplateFileName + " (got template path from user)"
+						: "(default template path)"));
 
 		Properties p = new Properties();
 		if (isUserDefineTemplatePath) {
@@ -249,38 +240,53 @@ public class Generator {
 
 	}
 
-	private static List<DocController> generateControllers(ClassDoc[] classes) {
-		List<DocController> controllers = new LinkedList<DocController>();
+	private static List<DocController> generateControllers(final ClassDoc[] classes) {
+		List<DocController> controllersList = new LinkedList<DocController>();
 		for (ClassDoc classDoc : classes) {
-			DocController controller = generateController(classDoc);
-			if (controller == null)
+			List<DocController> controllers = generateControllers(classDoc);
+			if (controllers == null || controllers.isEmpty()) {
 				continue;
+			}
+			controllersList.addAll(controllers);
+		}
+		return controllersList;
+	}
+
+	private static List<DocController> generateControllers(final ClassDoc classDoc) {
+		List<DocController> controllers = new LinkedList<DocController>();		
+		String controllerClassName = classDoc.typeName();
+
+		List<DocAnnotation> annotations = generateAnnotations(classDoc.annotations());
+		if (Utils.filterOutControllerClass(classDoc, annotations)) {
+			return null;
+		}
+
+		DocRequestMappingAnnotation requestMappingAnnotation = Utils.getRequestMappingAnnotation(annotations);
+		if (requestMappingAnnotation == null) {
+			throw new IllegalArgumentException("controller class " + controllerClassName 
+					+ " is missing request mapping annotation");
+		}
+		String[] uriArray = requestMappingAnnotation.getValue();
+		if (uriArray == null || uriArray.length == 0) {
+			throw new IllegalArgumentException("controller class "
+					+ controllerClassName
+					+ " is missing request mapping annotation's value (uri).");
+		}
+		for (String uri : uriArray) {
+			DocController controller = new DocController(controllerClassName);
+
+			SortedMap<String, DocMethod> generatedMethods = generateMethods(classDoc.methods());
+			if (generatedMethods.isEmpty()) {
+				throw new IllegalArgumentException("controller class "
+						+ controller.getName() + " doesn't have methods.");
+			}
+			controller.setMethods(generatedMethods);
+			controller.setUri(uri);
+			controller.setDescription(classDoc.commentText());
+
 			controllers.add(controller);
 		}
 		return controllers;
-	}
-
-	private static DocController generateController(ClassDoc classDoc) {
-		DocController controller = new DocController(classDoc.typeName());
-		List<DocAnnotation> annotations = generateAnnotations(classDoc
-				.annotations());
-		if (Utils.filterOutControllerClass(classDoc, annotations))
-			return null;
-
-		controller.setUri(Utils.getRequestMappingAnnotation(annotations)
-				.getValue());
-		controller.setMethods(generateMethods(classDoc.methods()));
-		controller.setDescription(classDoc.commentText());
-
-		if (StringUtils.isBlank(controller.getUri()))
-			throw new IllegalArgumentException("controller class "
-					+ controller.getName()
-					+ " is missing request mapping annotation's value (uri).");
-		if (controller.getMethods().isEmpty())
-			throw new IllegalArgumentException("controller class "
-					+ controller.getName() + " doesn't have methods.");
-
-		return controller;
 	}
 
 	private static List<DocAnnotation> generateAnnotations(
@@ -301,40 +307,43 @@ public class Generator {
 					.annotations());
 			DocRequestMappingAnnotation requestMappingAnnotation = Utils
 					.getRequestMappingAnnotation(annotations);
-
+			// Does not handle methods without a RequestMapping annotation.
 			if (requestMappingAnnotation == null) {
 				continue;
 			}
-
-			DocHttpMethod httpMethod = generateHttpMethod(methodDoc,
-					requestMappingAnnotation.getMethod(), annotations);
-			String uri = requestMappingAnnotation.getValue();
-
-			if (StringUtils.isBlank(uri)) {
-				throw new IllegalArgumentException(
-						"method "
-								+ methodDoc.name()
-								+ " is missing request mapping annotation's value (uri).");
+			// get all HTTP methods
+			String[] methodArray = requestMappingAnnotation.getMethod();
+			DocHttpMethod[] docHttpMethodArray = new DocHttpMethod[methodArray.length];
+			for (int i = 0; i < methodArray.length; i++) {
+				docHttpMethodArray[i] = generateHttpMethod(methodDoc,
+						methodArray[i], annotations);
 			}
-			// If method uri already exist, add the current httpMethod to the
-			// existing method.
-			// There can be several httpMethods (GET, POST, DELETE) for each
-			// uri.
-			DocMethod docMethod = docMethods.get(uri);
-			if (docMethod != null) {
-				docMethod.addHttpMethod(httpMethod);
-			} else {
-				docMethod = new DocMethod(httpMethod);
-				docMethod.setUri(uri);
+			// get all URIs
+			String[] uriArray = requestMappingAnnotation.getValue();
+			if (uriArray == null || uriArray.length == 0) {
+				throw new IllegalArgumentException("method " + methodDoc.name() 
+						+ " is missing request mapping annotation's value (uri).");
 			}
-
-			docMethods.put(docMethod.getUri(), docMethod);
+			for (String uri : uriArray) {
+				DocMethod docMethod = docMethods.get(uri);
+				// If method with that uri already exist, 
+				// add the current httpMethod to the existing method.
+				// There can be several httpMethods (GET, POST, DELETE) for each
+				// uri.
+				if (docMethod != null) {
+					docMethod.addHttpMethods(docHttpMethodArray);
+				} else {
+					docMethod = new DocMethod(docHttpMethodArray);
+					docMethod.setUri(uri);
+				}
+				docMethods.put(docMethod.getUri(), docMethod);
+			}
 		}
 		return docMethods;
 	}
 
-	private static DocHttpMethod generateHttpMethod(MethodDoc methodDoc,
-			String httpMethodName, List<DocAnnotation> annotations) {
+	private static DocHttpMethod generateHttpMethod(final MethodDoc methodDoc,
+			final String httpMethodName, final List<DocAnnotation> annotations) {
 
 		DocHttpMethod httpMethod = new DocHttpMethod(methodDoc.name(),
 				httpMethodName);
@@ -358,7 +367,7 @@ public class Generator {
 		return httpMethod;
 	}
 
-	private static List<DocParameter> generateParameters(MethodDoc methodDoc) {
+	private static List<DocParameter> generateParameters(final MethodDoc methodDoc) {
 		List<DocParameter> paramsList = new LinkedList<DocParameter>();
 
 		for (Parameter parameter : methodDoc.parameters()) {
@@ -374,7 +383,7 @@ public class Generator {
 		return paramsList;
 	}
 
-	private static DocReturnDetails generateReturnDetails(MethodDoc methodDoc) {
+	private static DocReturnDetails generateReturnDetails(final MethodDoc methodDoc) {
 		DocReturnDetails returnDetails = new DocReturnDetails(
 				methodDoc.returnType());
 		Tag[] returnTags = methodDoc.tags("return");

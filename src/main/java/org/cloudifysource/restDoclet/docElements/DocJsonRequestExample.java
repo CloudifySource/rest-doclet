@@ -20,14 +20,18 @@ import java.io.IOException;
 import org.apache.commons.lang.StringUtils;
 import org.cloudifysource.restDoclet.constants.RestDocConstants;
 import org.cloudifysource.restDoclet.generation.Utils;
-import org.codehaus.jackson.JsonParseException;
 
+/**
+ * 
+ * @author yael
+ *
+ */
 public class DocJsonRequestExample extends DocAnnotation {
 
 	private String requestJsonBody;
 	private String comments;
 
-	public DocJsonRequestExample(String name) {
+	public DocJsonRequestExample(final String name) {
 		super(name);
 	}
 
@@ -35,20 +39,26 @@ public class DocJsonRequestExample extends DocAnnotation {
 		return comments;
 	}
 
-	public String generateJsonRequestBody() throws JsonParseException, IOException {
+	/**
+	 * 
+	 * @return The request body in Json format.
+	 * @throws IOException .
+	 */
+	public String generateJsonRequestBody() throws IOException {
 		return Utils.getIndentJson(requestJsonBody);
 	}
 
 	@Override
-	public void addAttribute(String attrName, Object attrValue) {
+	public void addAttribute(final String attrName, final Object attrValue) {
 		String value = attrValue.toString().trim();
 
 		String shortAttrName = getShortName(attrName);
 
-		if(RestDocConstants.JSON_REQUEST_EXAMPLE_REQUEST_PARAMS.equals(shortAttrName))
+		if (RestDocConstants.JSON_REQUEST_EXAMPLE_REQUEST_PARAMS.equals(shortAttrName)) {
 			requestJsonBody = value;
-		else if(RestDocConstants.JSON_REQUEST_EXAMPLE_COMMENTS.equals(shortAttrName))
+		} else if (RestDocConstants.JSON_REQUEST_EXAMPLE_COMMENTS.equals(shortAttrName)) {
 			comments = value;
+		}
 
 		super.addAttribute(shortAttrName, value);
 	}
@@ -57,18 +67,20 @@ public class DocJsonRequestExample extends DocAnnotation {
 	public String toString() {
 		String str = "@" + RestDocConstants.JSON_REQUEST_EXAMPLE_ANNOTATION + "[";
 		boolean isEmpty = true;
-		if(!StringUtils.isBlank(requestJsonBody)) {
+		if (!StringUtils.isBlank(requestJsonBody)) {
 			str += "requestJsonBody = " + requestJsonBody;
 			isEmpty = false;
 		}
-		if(!StringUtils.isBlank(comments)) {
-			if(!isEmpty)
+		if (!StringUtils.isBlank(comments)) {
+			if (!isEmpty) {
 				str += ", ";
+			}
 			str += "comments = " + comments;
 			isEmpty = false;
 		}
-		if (isEmpty)
+		if (isEmpty) {
 			str += "annotation has no attributes";
+		}
 		return str + "]";
 	}
 

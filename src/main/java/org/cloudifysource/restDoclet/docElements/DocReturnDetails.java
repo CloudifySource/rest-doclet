@@ -17,11 +17,16 @@ package org.cloudifysource.restDoclet.docElements;
 
 import com.sun.javadoc.Type;
 
+/**
+ * 
+ * @author yael
+ *
+ */
 public class DocReturnDetails {
 	private final Type returnType;
 	private String description;
 
-	public DocReturnDetails(Type returnType) {
+	public DocReturnDetails(final Type returnType) {
 		this.returnType = returnType;
 	}
 	public Type getReturnType() {
@@ -30,15 +35,16 @@ public class DocReturnDetails {
 	public String getDescription() {
 		return description;
 	}
-	public void setDescription(String description) {
+	public void setDescription(final String description) {
 		this.description = description;
 	}
 
 	@Override
 	public String toString() {
 		String str = returnType.typeName();
-		if(description != null)
+		if (description != null) {
 			str += ": " + description;
+		}
 		return str;
 	}
 }

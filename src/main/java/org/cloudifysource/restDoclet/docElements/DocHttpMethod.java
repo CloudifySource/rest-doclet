@@ -22,126 +22,165 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * 
+ * @author yael
+ *
+ */
 public class DocHttpMethod {
 	private String methodSignatureName;
 	private String httpMethodName;
 	private String description;
-	
-	List<DocParameter> params;
-	List<DocParameter> annotatedParams;
-	Map<String, String> requestParamAnnotationParamValues;
-	
+
+	private List<DocParameter> params;
+	private List<DocParameter> annotatedParams;
+	private Map<String, String> requestParamAnnotationParamValues;
+
 	private DocReturnDetails returnDetails;
-	
+
 	private DocJsonRequestExample jsonRequestExample;
 	private DocJsonResponseExample jsonResponseExample;
 	private List<DocPossibleResponseStatusAnnotation> possibleResponseStatuses;
-	
-	
-	public DocHttpMethod(String methodSignatureName, String requestMethod) {
+
+	public DocHttpMethod(final String methodSignatureName, final String requestMethod) {
 		this.methodSignatureName = methodSignatureName;
 		this.httpMethodName = requestMethod;
 	}
-	
+
 	public String getMethodSignatureName() {
 		return methodSignatureName;
 	}
-	
+
 	public String getHttpMethodName() {
 		return httpMethodName;
 	}
+
 	public String getDescription() {
 		return description;
 	}
-	public void setDescription(String commentText) {
+
+	public void setDescription(final String commentText) {
 		description = commentText;
-		
+
 	}
-	
+
 	public List<DocParameter> getParams() {
 		return params;
 	}
-	public void setParams(List<DocParameter> params) {
+
+	/**
+	 * 
+	 * @param params .
+	 */
+	public void setParams(final List<DocParameter> params) {
 		this.params = params;
 		setAnnotatedParams();
 	}
+
 	public List<DocParameter> getAnnotatedParams() {
 		return annotatedParams;
 	}
+
+	/**
+	 * 
+	 */
 	public void setAnnotatedParams() {
-		if(params == null)
+		if (params == null) {
 			return;
+		}
 		for (DocParameter docParameter : params) {
-			DocRequestParamAnnotation requestParamAnnotation = docParameter.getRequestParamAnnotation();
-			if(requestParamAnnotation != null) {
-				if(requestParamAnnotationParamValues == null)
+			DocRequestParamAnnotation requestParamAnnotation = docParameter
+					.getRequestParamAnnotation();
+			if (requestParamAnnotation != null) {
+				if (requestParamAnnotationParamValues == null) {
 					requestParamAnnotationParamValues = new HashMap<String, String>();
-				requestParamAnnotationParamValues.put(docParameter.getName(), ("<" + docParameter.getType() + ">"));
+				}
+				requestParamAnnotationParamValues.put(docParameter.getName(),
+						("<" + docParameter.getType() + ">"));
 			}
 			List<DocAnnotation> annotations = docParameter.getAnnotations();
-			if(annotations != null && !annotations.isEmpty()) {
-				if(annotatedParams == null)
+			if (annotations != null && !annotations.isEmpty()) {
+				if (annotatedParams == null) {
 					annotatedParams = new LinkedList<DocParameter>();
+				}
 				annotatedParams.add(docParameter);
 			}
 		}
 	}
-	
+
 	public DocReturnDetails getReturnDetails() {
 		return returnDetails;
 	}
-	public void setReturnDetails(DocReturnDetails returnDetails) {
+
+	public void setReturnDetails(final DocReturnDetails returnDetails) {
 		this.returnDetails = returnDetails;
 	}
-	
+
 	public DocJsonResponseExample getJsonResponseExample() {
 		return jsonResponseExample;
 	}
-	public void setJsonResponseExample(DocJsonResponseExample jsonResponseExample) {
+
+	public void setJsonResponseExample(
+			final DocJsonResponseExample jsonResponseExample) {
 		this.jsonResponseExample = jsonResponseExample;
 	}
+
 	public DocJsonRequestExample getJsonRequestExample() {
 		return jsonRequestExample;
 	}
-	public void setJsonRequesteExample(DocJsonRequestExample request) {
+
+	public void setJsonRequesteExample(final DocJsonRequestExample request) {
 		this.jsonRequestExample = request;
 	}
+
 	public List<DocPossibleResponseStatusAnnotation> getPossibleResponseStatuses() {
 		return possibleResponseStatuses;
 	}
-	public void setPossibleResponseStatuses(final DocPossibleResponseStatusesAnnotation possibleResponseStatusesAnnotation) {
+
+	/**
+	 * 
+	 * @param possibleResponseStatusesAnnotation .
+	 */
+	public void setPossibleResponseStatuses(
+			final DocPossibleResponseStatusesAnnotation possibleResponseStatusesAnnotation) {
 		if (possibleResponseStatusesAnnotation != null) {
-			this.possibleResponseStatuses = possibleResponseStatusesAnnotation.getResponseStatuses();
+			this.possibleResponseStatuses = possibleResponseStatusesAnnotation
+					.getResponseStatuses();
 		}
 	}
 
 	@Override
 	public String toString() {
-		String httpMethodShort = httpMethodName.substring(httpMethodName.lastIndexOf('.') + 1);
+		String httpMethodShort = httpMethodName.substring(httpMethodName
+				.lastIndexOf('.') + 1);
 		String str = "http method: " + httpMethodShort + "\n";
-		if(StringUtils.isBlank(description))
+		if (StringUtils.isBlank(description)) {
 			str += "description: " + description + "\n";
-		if(params != null && !params.isEmpty()) {
+		}
+		if (params != null && !params.isEmpty()) {
 			StringBuilder paramsStr = new StringBuilder();
 			for (DocParameter param : params) {
 				paramsStr.append("   ").append(param).append("\n");
 			}
-			str += 	"parameters: \n" + paramsStr;		
+			str += "parameters: \n" + paramsStr;
 		}
 		str += "returns " + returnDetails;
-		if(jsonResponseExample != null)
+		if (jsonResponseExample != null) {
 			str += "Response example: " + jsonResponseExample + "\n";
-		if(jsonRequestExample != null)
+		}
+		if (jsonRequestExample != null) {
 			str += "Request example: " + jsonRequestExample + "\n";
-		
-		if(possibleResponseStatuses != null) {
+		}
+
+		if (possibleResponseStatuses != null) {
 			StringBuilder responseStatusStr = new StringBuilder();
 			for (DocPossibleResponseStatusAnnotation responseStatus : possibleResponseStatuses) {
-				responseStatusStr.append("* ").append(responseStatus).append("\n");
+				responseStatusStr.append("* ").append(responseStatus)
+						.append("\n");
 			}
 			str += "Returns: " + responseStatusStr;
 		}
 		return str;
 	}
-	
+
 }
