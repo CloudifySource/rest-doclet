@@ -28,8 +28,8 @@ import org.apache.commons.lang.StringUtils;
  *
  */
 public class DocHttpMethod {
-	private String methodSignatureName;
-	private String httpMethodName;
+	private final String methodSignatureName;
+	private final String httpMethodName;
 	private String description;
 
 	private List<DocParameter> params;

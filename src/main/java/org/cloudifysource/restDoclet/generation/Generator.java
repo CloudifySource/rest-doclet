@@ -70,7 +70,7 @@ import com.sun.javadoc.Tag;
  * 
  */
 public class Generator {
-	private RootDoc documentation;
+	private final RootDoc documentation;
 	private String velocityTemplatePath;
 	private String velocityTemplateFileName;
 	private boolean isUserDefineTemplatePath = false;

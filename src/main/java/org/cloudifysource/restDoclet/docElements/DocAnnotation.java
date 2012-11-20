@@ -83,7 +83,9 @@ public class DocAnnotation {
 				Array.set(constractedValues, i, currentValue);
 			}
 			return constractedValues;
-		} else if (value instanceof AnnotationDesc) {
+		} 
+		
+		if (value instanceof AnnotationDesc) {
 			return Utils.createNewAnnotation((AnnotationDesc) value);
 		}
 		return value;

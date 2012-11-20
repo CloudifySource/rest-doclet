@@ -74,19 +74,16 @@ public class DocMethod {
 
 	@Override
 	public String toString() {
-		String str = "\nmapping: " + uri + "\n";
+		StringBuilder str = new StringBuilder("\nmapping: ").append(uri).append('\n');
 		if (description != null && !description.isEmpty()) {
-			str += "description: \n" + description + "\n";
+			str.append("description: \n").append(description).append('\n');
 		}
 		if (httpMethods != null) {
-			str += "httpMethods:\n";
-			StringBuilder httpMethodsStr = new StringBuilder();
+			str.append("httpMethods:\n");
 			for (DocHttpMethod httpMethod : httpMethods) {
-				httpMethodsStr.append(httpMethod);
-				httpMethodsStr.append("\n");
+				str.append(httpMethod).append('\n');
 			}
-			str += httpMethodsStr;
 		}
-		return str;
+		return str.toString();
 	}
 }
