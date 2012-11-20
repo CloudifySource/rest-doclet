@@ -104,13 +104,13 @@ public class DocParameter {
 		if (annotations == null) {
 			return;
 		}
-		String currLocation = "";
+		StringBuilder currLocation = new StringBuilder();
 		for (DocAnnotation docAnnotation : annotations) {
 			String annotationName = docAnnotation.getName();
-			if (!currLocation.isEmpty()) {
-				currLocation += " or ";
+			if (currLocation.length() > 0) {
+				currLocation.append(" or ");
 			}
-			currLocation += annotationName;
+			currLocation.append(annotationName);
 			DocAnnotationTypes docAnnotationType = DocAnnotationTypes
 					.fromName(annotationName);
 			if (docAnnotationType == DocAnnotationTypes.REQUEST_PARAM) {
@@ -127,24 +127,24 @@ public class DocParameter {
 						"Unsupported parameter annotation - " + annotationName);
 			}
 		}
-		this.location = currLocation;
+		this.location = currLocation.toString();
 	}
 
 	@Override
 	public String toString() {
-		String str = "Parameter[";
+		StringBuilder str = new StringBuilder("Parameter[");
 		if (annotations != null) {
 			if (annotations.size() == 1) {
-				str += annotations.get(0) + ", ";
+				str.append(annotations.get(0)).append(", ");
 			} else {
-				str += annotations + ", ";
+				str.append(annotations).append(", ");
 			}
 		}
-		str += "type = " + type + ", name = " + name;
+		str.append("type = ").append(type).append(", name = ").append(name);
 		if (description != null) {
-			str += description;
+			str.append(description);
 		}
-		return str + "]";
+		return str.append("]").toString();
 	}
 
 }

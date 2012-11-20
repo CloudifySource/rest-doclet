@@ -153,23 +153,23 @@ public class DocHttpMethod {
 	public String toString() {
 		String httpMethodShort = httpMethodName.substring(httpMethodName
 				.lastIndexOf('.') + 1);
-		String str = "http method: " + httpMethodShort + "\n";
+		StringBuilder str = new StringBuilder("http method: ").append(httpMethodShort).append('\n');
 		if (StringUtils.isBlank(description)) {
-			str += "description: " + description + "\n";
+			str.append("description: ").append(description).append('\n');
 		}
 		if (params != null && !params.isEmpty()) {
 			StringBuilder paramsStr = new StringBuilder();
 			for (DocParameter param : params) {
-				paramsStr.append("   ").append(param).append("\n");
+				paramsStr.append("   ").append(param).append('\n');
 			}
-			str += "parameters: \n" + paramsStr;
+			str.append("parameters: \n").append(paramsStr);
 		}
-		str += "returns " + returnDetails;
+		str.append("returns ").append(returnDetails);
 		if (jsonResponseExample != null) {
-			str += "Response example: " + jsonResponseExample + "\n";
+			str.append("Response example: ").append(jsonResponseExample).append('\n');
 		}
 		if (jsonRequestExample != null) {
-			str += "Request example: " + jsonRequestExample + "\n";
+			str.append("Request example: ").append(jsonRequestExample).append('\n');
 		}
 
 		if (possibleResponseStatuses != null) {
@@ -178,9 +178,9 @@ public class DocHttpMethod {
 				responseStatusStr.append("* ").append(responseStatus)
 						.append("\n");
 			}
-			str += "Returns: " + responseStatusStr;
+			str.append("Returns: ").append(responseStatusStr);
 		}
-		return str;
+		return str.toString();
 	}
 
 }
