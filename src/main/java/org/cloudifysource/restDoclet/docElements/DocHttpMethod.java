@@ -85,7 +85,7 @@ public class DocHttpMethod {
 	 * 
 	 */
 	public void setAnnotatedParams() {
-		if (params == null) {
+		if (params == null || params.isEmpty()) {
 			return;
 		}
 		for (DocParameter docParameter : params) {

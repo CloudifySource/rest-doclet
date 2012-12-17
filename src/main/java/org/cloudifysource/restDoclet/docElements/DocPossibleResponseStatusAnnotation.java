@@ -58,19 +58,4 @@ public class DocPossibleResponseStatusAnnotation extends DocAnnotation {
 		}
 		super.addAttribute(attrName, attrValue);
 	}
-
-	@Override
-	public String toString() {
-		String str = "@" + RestDocConstants.POSSIBLE_RESPONSE_STATUS_ANNOTATION + "{";
-		if (code != null) {			
-			str += "code : \"" + code + " " + codeName + "\"";
-		}
-		if (code != null && description != null) {	
-			str += ", ";
-		}
-		if (description != null) {
-			str += "description: " + description;
-		}
-		return str + "}";
-	}
 }

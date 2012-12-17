@@ -61,22 +61,4 @@ public class DocRequestParamAnnotation extends DocAnnotation {
 		super.addAttribute(shortAttrName, attrValue);
 	}
 
-	@Override
-	public String toString() {
-		String str = "@" + RestDocConstants.REQUEST_PARAMS_ANNOTATION + "{";
-		if (value != null) {
-			str += RestDocConstants.REQUEST_PARAMS_VALUE + " = \"" + value
-					+ "\"";
-		}
-		if (defaultValue != null) {
-			str += RestDocConstants.REQUEST_PARAMS_DEFAULT_VALUE + " = \""
-					+ defaultValue + "\"";
-		}
-		if (requierd != null) {
-			str += RestDocConstants.REQUEST_PARAMS_REQUIRED + " = \""
-					+ requierd + "\"";
-		}
-		return str + "}";
-	}
-
 }

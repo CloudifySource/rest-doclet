@@ -17,7 +17,6 @@ package org.cloudifysource.restDoclet.docElements;
 
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
 import org.cloudifysource.restDoclet.constants.RestDocConstants;
 import org.cloudifysource.restDoclet.generation.Utils;
 
@@ -62,28 +61,4 @@ public class DocJsonRequestExample extends DocAnnotation {
 
 		super.addAttribute(shortAttrName, value);
 	}
-
-	@Override
-	public String toString() {
-		String str = "@" + RestDocConstants.JSON_REQUEST_EXAMPLE_ANNOTATION + "[";
-		boolean isEmpty = true;
-		if (!StringUtils.isBlank(requestJsonBody)) {
-			str += "requestJsonBody = " + requestJsonBody;
-			isEmpty = false;
-		}
-		if (!StringUtils.isBlank(comments)) {
-			if (!isEmpty) {
-				str += ", ";
-			}
-			str += "comments = " + comments;
-			isEmpty = false;
-		}
-		if (isEmpty) {
-			str += "annotation has no attributes";
-		}
-		return str + "]";
-	}
-
-
-
 }

@@ -142,7 +142,7 @@ public class DocParameter {
 		}
 		str.append("type = ").append(type).append(", name = ").append(name);
 		if (description != null) {
-			str.append(description);
+			str.append(", description = " + description);
 		}
 		return str.append("]").toString();
 	}

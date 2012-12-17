@@ -18,7 +18,6 @@ package org.cloudifysource.restDoclet.docElements;
 import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.cloudifysource.restDoclet.constants.RestDocConstants.DocAnnotationTypes;
 import org.cloudifysource.restDoclet.generation.Utils;
@@ -102,18 +101,11 @@ public class DocAnnotation {
 
 	@Override
 	public String toString() {
-		String str = "@" + name;
+		String str = "@" + name + " ";
 		if (attributes != null && attributes.size() > 0) {
-			StringBuilder attrStr = new StringBuilder();
-			for (Entry<String, Object> entry : attributes.entrySet()) {
-				attrStr.append(entry.getKey()).append("=")
-						.append(entry.getValue().toString()).append(", ");
-			}
-			if (attrStr.length() == 0) {
-				str += " {No attributes}";
-			} else {
-				str += " {" + attrStr.substring(0, str.lastIndexOf(',')) + "}";
-			}
+			str += attributes;
+		} else {
+			str += "{No attributes}";
 		}
 		return str;
 	}

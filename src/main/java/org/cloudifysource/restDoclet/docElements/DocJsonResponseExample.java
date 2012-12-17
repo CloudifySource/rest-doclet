@@ -77,16 +77,4 @@ public class DocJsonResponseExample extends DocAnnotation {
 
 		super.addAttribute(shortAttrName, value);
 	}
-
-	@Override
-	public String toString() {
-		String str = "@" + RestDocConstants.JSON_RESPONSE_EXAMPLE_ANNOTATION + "[status = " + status;
-		if (!StringUtils.isBlank(response)) {
-			str += ", response = " + response;
-		}
-		if (!StringUtils.isBlank(comments)) {
-			str += ", comments = " + comments;
-		}
-		return str + "]";
-	}
 }

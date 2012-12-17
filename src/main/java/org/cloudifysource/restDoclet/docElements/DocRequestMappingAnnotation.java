@@ -98,33 +98,4 @@ public class DocRequestMappingAnnotation extends DocAnnotation {
 
 		super.addAttribute(shortAttrName, attrValue);
 	}
-
-	private String getStringArray(final String title, final String[] array) {
-		if (array == null || array.length == 0) {
-			return "";
-		}
-		String str = title + " = {\"";
-		for (String element : array) {				
-			str += element + "\",";
-		}
-		str = str.substring(0, str.length() - 1);
-		return str + "}, ";
-	}
-
-	@Override
-	public String toString() {
-		String str = "@" + RestDocConstants.REQUEST_MAPPING_ANNOTATION 
-				+ "{"
-				+ getStringArray(RestDocConstants.REQUEST_MAPPING_VALUE, value)
-				+ getStringArray(RestDocConstants.REQUEST_MAPPING_METHOD, method)
-				+ getStringArray(RestDocConstants.REQUEST_MAPPING_HEADERS, headers)
-				+ getStringArray(RestDocConstants.REQUEST_MAPPING_PARAMS, params)
-				+ getStringArray(RestDocConstants.REQUEST_MAPPING_PRODUCES, produces)
-				+ getStringArray(RestDocConstants.REQUEST_MAPPING_CONSUMED, consumes);
-		int lastIndexOf = str.lastIndexOf(',');
-		if (lastIndexOf != -1) {
-			str = str.substring(0, lastIndexOf);
-		}
-		return str + "}";
-	}
 }
