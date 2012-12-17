@@ -229,7 +229,8 @@ public final class Utils {
 	 */
 	protected static boolean filterOutMethod(final MethodDoc methodDoc,
 			final List<DocAnnotation> annotations) {
-		return (getAnnotation(annotations, RestDocConstants.REQUEST_MAPPING_ANNOTATION) == null);
+		return (getAnnotation(annotations, RestDocConstants.INTERNAL_METHOD_ANNOTATION) != null || 
+				getAnnotation(annotations, RestDocConstants.REQUEST_MAPPING_ANNOTATION) == null);
 	}
 	
 	@SuppressWarnings("unused")

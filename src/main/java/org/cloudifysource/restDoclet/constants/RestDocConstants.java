@@ -216,6 +216,11 @@ public final class RestDocConstants {
 	/**
 	 * 
 	 */
+	public static final String INTERNAL_METHOD_ANNOTATION = "InternalMethod";
+	
+	/**
+	 * 
+	 */
 	public static final String HTTP_MATHOD_GET = "GET";
 	/**
 	 * 
@@ -230,7 +235,7 @@ public final class RestDocConstants {
 	 * 
 	 */
 	public enum DocAnnotationTypes {
-		CONTROLLER, REQUEST_MAPPING, REQUEST_PARAM, REQUEST_BODY, RESPONSE_BODY, PATH_VARIABLE, 
+		INTERNAL_METHOD_ANNOTATION, CONTROLLER, REQUEST_MAPPING, REQUEST_PARAM, REQUEST_BODY, RESPONSE_BODY, PATH_VARIABLE, 
 		JSON_RESPONSE_EXAMPLE, JSON_REQUEST_EXAMPLE, POSSIBLE_RESPONSE_STATUS, POSSIBLE_RESPONSE_STATUSES, DEFAULT;
 
 		/**
@@ -239,7 +244,9 @@ public final class RestDocConstants {
 		 * @return The annotation type.
 		 */
 		public static DocAnnotationTypes fromName(final String annotationName) {
-			if (CONTROLLER_ANNOTATION.equals(annotationName)) {
+			if (INTERNAL_METHOD_ANNOTATION.equals(annotationName)) {
+				return INTERNAL_METHOD_ANNOTATION;
+			} else if (CONTROLLER_ANNOTATION.equals(annotationName)) {
 				return CONTROLLER;
 			} else if (REQUEST_MAPPING_ANNOTATION.equals(annotationName)) {
 				return REQUEST_MAPPING;
@@ -289,6 +296,7 @@ public final class RestDocConstants {
 			case RESPONSE_BODY:
 			case PATH_VARIABLE:
 			case CONTROLLER:
+			case INTERNAL_METHOD_ANNOTATION:
 				return DocAnnotation.class;
 			default:
 				throw new IllegalArgumentException(
