@@ -214,6 +214,7 @@ public class Generator {
 						: "(default template path)"));
 
 		Properties p = new Properties();
+		p.setProperty("directive.set.null.allowed", "true");
 		if (isUserDefineTemplatePath) {
 			p.setProperty("file.resource.loader.path", velocityTemplatePath);
 		} else {
@@ -336,7 +337,7 @@ public class Generator {
 					docMethod = new DocMethod(docHttpMethodArray);
 					docMethod.setUri(uri);
 				}
-				docMethods.put(docMethod.getUri(), docMethod);
+				docMethods.put(uri, docMethod);
 			}
 		}
 		return docMethods;
