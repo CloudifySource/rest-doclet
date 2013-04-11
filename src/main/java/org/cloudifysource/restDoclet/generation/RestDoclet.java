@@ -40,8 +40,8 @@ public class RestDoclet extends Doclet {
 	public static boolean start(final RootDoc root) {
 		try {
 			new Generator(root).run();
-			logger.log(Level.INFO,
-					"REST API documentation was successfully generated.");
+			logger.info(
+					"REST API documentation was successfully generated");
 			return true;
 		} catch (Exception e) {
 			logger.log(

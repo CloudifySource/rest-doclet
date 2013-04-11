@@ -91,11 +91,28 @@ public class Generator {
 	}
 
 	/**
+	 * 
 	 * @param args .
-	 * @throws Exception .
+	 * @throws Exception Exception.
+	 * <p>This class uses the annotationType() method of class DocAnnotation, 
+	 * so if there is an annotation in the source with its class not in the class path, 
+	 * a ClassCastException will be thrown.
+	 * <br>For example, in order to use the PreAuthorize annotation, 
+	 * the spring-security-core JAR needs to be added to the class path. 
+	 * <br><a href="http://stackoverflow.com/questions/5314738/javadoc-annotations-from-third-party-libraries">
+	 * related question in stackoverflow</a>
 	 */
 	public static void main(final String[] args) throws Exception {
 
+		/** 
+		 * This class uses the annotationType() method of class DocAnnotation, 
+		 * so if there is an annotation in the source which its class is not in the class path, 
+		 * a ClassCastException will be thrown.
+		 * For example, to use the PreAuthorize annotation, 
+		 * the spring-security-core JAR need to be added to the class path. 
+		 * See <a href="http://stackoverflow.com/questions/5314738/javadoc-annotations-from-third-party-libraries">
+		 * related question in stackoverflow</a>
+		 **/
 		com.sun.tools.javadoc.Main.execute(new String[] {
 				RestDocConstants.DOCLET_FLAG, RestDoclet.class.getName(),
 				RestDocConstants.SOURCE_PATH_FLAG, RestDocConstants.SOURCES_PATH, RestDocConstants.CONTROLLERS_PACKAGE,
