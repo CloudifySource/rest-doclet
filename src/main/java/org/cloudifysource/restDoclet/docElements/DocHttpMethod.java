@@ -15,10 +15,8 @@
  *******************************************************************************/
 package org.cloudifysource.restDoclet.docElements;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -34,13 +32,16 @@ public class DocHttpMethod {
 
 	private List<DocParameter> params;
 	private List<DocParameter> annotatedParams;
-	private Map<String, String> requestParamAnnotationParamValues;
+	private DocParameter requestBodyParameter;
 
 	private DocReturnDetails returnDetails;
 
 	private DocJsonRequestExample jsonRequestExample;
 	private DocJsonResponseExample jsonResponseExample;
 	private List<DocPossibleResponseStatusAnnotation> possibleResponseStatuses;
+	private String requestExample;
+	private String responseExample;
+
 
 	public DocHttpMethod(final String methodSignatureName, final String requestMethod) {
 		this.methodSignatureName = methodSignatureName;
@@ -89,23 +90,23 @@ public class DocHttpMethod {
 			return;
 		}
 		for (DocParameter docParameter : params) {
-			DocRequestParamAnnotation requestParamAnnotation = docParameter
-					.getRequestParamAnnotation();
-			if (requestParamAnnotation != null) {
-				if (requestParamAnnotationParamValues == null) {
-					requestParamAnnotationParamValues = new HashMap<String, String>();
-				}
-				requestParamAnnotationParamValues.put(docParameter.getName(),
-						("<" + docParameter.getType() + ">"));
-			}
 			List<DocAnnotation> annotations = docParameter.getAnnotations();
 			if (annotations != null && !annotations.isEmpty()) {
+				DocAnnotation requestBodyAnnotation = docParameter
+						.getRequestBodyAnnotation();
+				if (requestBodyAnnotation != null) {
+					requestBodyParameter = docParameter;
+				}
 				if (annotatedParams == null) {
 					annotatedParams = new LinkedList<DocParameter>();
 				}
 				annotatedParams.add(docParameter);
 			}
 		}
+	}
+	
+	public DocParameter getRequestBodyParameter() {
+		return this.requestBodyParameter;
 	}
 
 	public DocReturnDetails getReturnDetails() {
@@ -136,6 +137,22 @@ public class DocHttpMethod {
 	public List<DocPossibleResponseStatusAnnotation> getPossibleResponseStatuses() {
 		return possibleResponseStatuses;
 	}
+	
+	public String getRequestExample() {
+		return requestExample;
+	}
+
+	public void setRequestExample(final String requestExample) {
+		this.requestExample = requestExample;
+	}
+
+	public String getResponseExample() {
+		return responseExample;
+	}
+
+	public void setResponseExample(final String responseExample) {
+		this.responseExample = responseExample;
+	}
 
 	/**
 	 * 
@@ -148,7 +165,7 @@ public class DocHttpMethod {
 					.getResponseStatuses();
 		}
 	}
-
+	
 	@Override
 	public String toString() {
 		String httpMethodShort = httpMethodName.substring(httpMethodName
@@ -165,11 +182,15 @@ public class DocHttpMethod {
 			str.append("parameters: \n").append(paramsStr);
 		}
 		str.append("returns ").append(returnDetails);
-		if (jsonResponseExample != null) {
-			str.append("Response example: ").append(jsonResponseExample).append('\n');
-		}
 		if (jsonRequestExample != null) {
 			str.append("Request example: ").append(jsonRequestExample).append('\n');
+		} else {
+			str.append("Request example: ").append(requestExample).append('\n');
+		}
+		if (jsonResponseExample != null) {
+			str.append("Response example: ").append(jsonResponseExample).append('\n');
+		} else {
+			str.append("Response example: ").append(responseExample).append('\n');
 		}
 
 		if (possibleResponseStatuses != null) {
@@ -182,5 +203,6 @@ public class DocHttpMethod {
 		}
 		return str.toString();
 	}
+
 
 }

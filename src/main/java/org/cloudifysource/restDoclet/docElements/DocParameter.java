@@ -34,6 +34,7 @@ public class DocParameter {
 
 	private List<DocAnnotation> annotations;
 	private DocRequestParamAnnotation requestParamAnnotation;
+	private DocAnnotation requestBodyAnnotation;
 
 	public DocParameter(final String name, final Type type) {
 		this.name = name;
@@ -99,6 +100,10 @@ public class DocParameter {
 	public DocRequestParamAnnotation getRequestParamAnnotation() {
 		return requestParamAnnotation;
 	}
+	
+	public DocAnnotation getRequestBodyAnnotation() {
+		return requestBodyAnnotation;
+	}
 
 	private void setAnnotationsAttributes() {
 		if (annotations == null) {
@@ -121,8 +126,9 @@ public class DocParameter {
 							+ DocRequestParamAnnotation.class.getName());
 				}
 				requestParamAnnotation = (DocRequestParamAnnotation) docAnnotation;
-			} else if (docAnnotationType != DocAnnotationTypes.PATH_VARIABLE
-					&& docAnnotationType != DocAnnotationTypes.REQUEST_BODY) {
+			} else if (docAnnotationType == DocAnnotationTypes.REQUEST_BODY) {
+				requestBodyAnnotation = docAnnotation;
+			} else if (docAnnotationType != DocAnnotationTypes.PATH_VARIABLE) {
 				throw new IllegalArgumentException(
 						"Unsupported parameter annotation - " + annotationName);
 			}

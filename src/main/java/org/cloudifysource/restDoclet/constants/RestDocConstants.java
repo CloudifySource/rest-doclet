@@ -1,4 +1,5 @@
 /*******************************************************************************
+
  * Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,15 +39,32 @@ public final class RestDocConstants {
 	/**
 	 * 
 	 */
+	public static final String CLOUDIFY_PATH = ".." + File.separator + ".." + File.separator 
+			+ "workspaceCloudify" + File.separator + "cloudify";
+	/**
+	 * 
+	 */
 	public static final String SOURCE_PATH_FLAG = "-sourcepath";
 	/**
 	 * 
 	 */
-	public static final String SOURCES_PATH = "../../workspaceCloudify/cloudify/restful/src/main/java";
+	public static final String SOURCES_PATH = CLOUDIFY_PATH + File.separator + "restful" + File.separator + "src" 
+			+ File.separator + "main" + File.separator + "java";
 	/**
 	 * 
 	 */
 	public static final String CONTROLLERS_PACKAGE = "org.cloudifysource.rest.controllers";
+	/**
+	 * 
+	 */
+	public static final String DSL_RESPONSE_SOURCES_PATH = CLOUDIFY_PATH + File.separator + "dsl" 
+			+ File.separator + "src" + File.separator + "main" + File.separator + "java"
+			+ File.separator + "org" + File.separator + "cloudifysource" + File.separator 
+			+ "dsl" + File.separator + "rest" + File.separator + "response";
+	/**
+	 * 
+	 */
+	public static final String DSL_RESPONSE_PACKAGE = "org.cloudifysource.dsl.rest.response";
 	/**
 	 * 
 	 */
@@ -95,6 +113,14 @@ public final class RestDocConstants {
 	 * 
 	 */
 	public static final String VERSION = "";
+	/**
+	 * 
+	 */
+	public static final String REQUEST_EXAMPLE_GENERATOR_CLASS_FLAG = "-requestExampleGeneratorClass";
+	/**
+	 * 
+	 */
+	public static final String RESPONSE_EXAMPLE_GENERATOR_CLASS_FLAG = "-responseExampleGeneratorClass";
 	/**
 	 * 
 	 */
@@ -230,13 +256,58 @@ public final class RestDocConstants {
 	 * 
 	 */
 	public static final String HTTP_MATHOD_DELETE = "DELETE";
-
 	/**
 	 * 
 	 */
 	public enum DocAnnotationTypes {
-		INTERNAL_METHOD_ANNOTATION, CONTROLLER, REQUEST_MAPPING, REQUEST_PARAM, REQUEST_BODY, RESPONSE_BODY, PATH_VARIABLE, 
-		JSON_RESPONSE_EXAMPLE, JSON_REQUEST_EXAMPLE, POSSIBLE_RESPONSE_STATUS, POSSIBLE_RESPONSE_STATUSES, DEFAULT;
+		/**
+		 * 
+		 */
+		INTERNAL_METHOD_ANNOTATION, 
+		/**
+		 * 
+		 */
+		CONTROLLER, 
+		/**
+		 * 
+		 */
+		REQUEST_MAPPING, 
+		/**
+		 * 
+		 */
+		REQUEST_PARAM, 
+		/**
+		 * 
+		 */
+		REQUEST_BODY, 
+		/**
+		 * 
+		 */
+		RESPONSE_BODY, 
+		/**
+		 * 
+		 */
+		PATH_VARIABLE, 
+		/**
+		 * 
+		 */
+		JSON_RESPONSE_EXAMPLE, 
+		/**
+		 * 
+		 */
+		JSON_REQUEST_EXAMPLE, 
+		/**
+		 * 
+		 */
+		POSSIBLE_RESPONSE_STATUS, 
+		/**
+		 * 
+		 */
+		POSSIBLE_RESPONSE_STATUSES, 
+		/**
+		 * 
+		 */
+		DEFAULT;
 
 		/**
 		 * 

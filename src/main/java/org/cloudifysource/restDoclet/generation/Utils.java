@@ -64,7 +64,13 @@ public final class Utils {
 	public static DocAnnotation createNewAnnotation(
 			final AnnotationDesc annotationDesc) {
 		DocAnnotation docAnnotation = null;
-		String name = annotationDesc.annotationType().typeName();
+		String name = null;
+		try {
+		name = annotationDesc.annotationType().typeName();
+		} catch (Exception e) {
+			String fullName = annotationDesc.toString();
+			name = fullName.substring(1);
+		}
 		switch (RestDocConstants.DocAnnotationTypes.fromName(name)) {
 		case REQUEST_MAPPING:
 			docAnnotation = new DocRequestMappingAnnotation(name);
@@ -214,9 +220,10 @@ public final class Utils {
 	 */
 	protected static boolean filterOutControllerClass(final ClassDoc classDoc,
 			final List<DocAnnotation> annotations) {
+		String name = classDoc.qualifiedTypeName();
 		return (Utils.getAnnotation(annotations,
-				RestDocConstants.CONTROLLER_ANNOTATION) == null || RestDocConstants.ADMIN_API_CONTROLLER_CLASS_NAME
-				.equals(classDoc.qualifiedTypeName()));
+				RestDocConstants.CONTROLLER_ANNOTATION) == null 
+				|| RestDocConstants.ADMIN_API_CONTROLLER_CLASS_NAME.equals(name));
 		// return
 		// !(classDoc.qualifiedTypeName().equals(RestDocConstants.SERVICE_CONTROLLER_CLASS_NAME));
 	}
@@ -225,7 +232,7 @@ public final class Utils {
 	 * 
 	 * @param methodDoc .
 	 * @param annotations .
-	 * @return true if the class should be filtered out, false otherwise.
+	 * @return true if the method should be filtered out, false otherwise.
 	 */
 	protected static boolean filterOutMethod(final MethodDoc methodDoc,
 			final List<DocAnnotation> annotations) {

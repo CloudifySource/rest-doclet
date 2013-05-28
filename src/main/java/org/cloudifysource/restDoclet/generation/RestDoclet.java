@@ -46,8 +46,7 @@ public class RestDoclet extends Doclet {
 		} catch (Exception e) {
 			logger.log(
 					Level.SEVERE,
-					"Failed to generate REST API documentation: "
-							+ e.getMessage());
+					"Failed to generate REST API documentation.");
 			e.printStackTrace();
 			return false;
 		}
@@ -62,7 +61,9 @@ public class RestDoclet extends Doclet {
 		if (RestDocConstants.VELOCITY_TEMPLATE_PATH_FLAG.equals(option)
 				|| RestDocConstants.DOC_DEST_PATH_FLAG.equals(option)
 				|| RestDocConstants.VERSION_FLAG.equals(option)
-				|| RestDocConstants.DOC_CSS_PATH_FLAG.equals(option)) {
+				|| RestDocConstants.DOC_CSS_PATH_FLAG.equals(option)
+				|| RestDocConstants.REQUEST_EXAMPLE_GENERATOR_CLASS_FLAG.equals(option)
+				|| RestDocConstants.RESPONSE_EXAMPLE_GENERATOR_CLASS_FLAG.equals(option)) {
 			return 2;
 		}
 		return 0;

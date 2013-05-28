@@ -27,6 +27,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -37,10 +38,14 @@ import org.cloudifysource.restDoclet.constants.RestDocConstants;
 import org.cloudifysource.restDoclet.docElements.DocAnnotation;
 import org.cloudifysource.restDoclet.docElements.DocController;
 import org.cloudifysource.restDoclet.docElements.DocHttpMethod;
+import org.cloudifysource.restDoclet.docElements.DocJsonRequestExample;
+import org.cloudifysource.restDoclet.docElements.DocJsonResponseExample;
 import org.cloudifysource.restDoclet.docElements.DocMethod;
 import org.cloudifysource.restDoclet.docElements.DocParameter;
 import org.cloudifysource.restDoclet.docElements.DocRequestMappingAnnotation;
 import org.cloudifysource.restDoclet.docElements.DocReturnDetails;
+import org.cloudifysource.restDoclet.exampleGenerators.DocDefaultExampleGenerator;
+import org.cloudifysource.restDoclet.exampleGenerators.IDocExampleGenerator;
 
 import com.sun.javadoc.AnnotationDesc;
 import com.sun.javadoc.ClassDoc;
@@ -48,6 +53,7 @@ import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.RootDoc;
 import com.sun.javadoc.Tag;
+import com.sun.javadoc.Type;
 
 /**
  * Generates REST API documentation in an HTML form. <br />
@@ -77,6 +83,9 @@ public class Generator {
 	private String docPath;
 	private String version;
 	private String docCssPath;
+	private static String requestExampleGeberatorName;
+	private static String responseExampleGeneratorName;
+	
 
 	private static final Logger logger = Logger.getLogger(Generator.class
 			.getName());
@@ -119,7 +128,8 @@ public class Generator {
 				RestDocConstants.VELOCITY_TEMPLATE_PATH_FLAG, RestDocConstants.VELOCITY_TEMPLATE_PATH,
 				RestDocConstants.DOC_DEST_PATH_FLAG, RestDocConstants.DOC_DEST_PATH, 
 				RestDocConstants.DOC_CSS_PATH_FLAG, RestDocConstants.DOC_CSS_PATH,
-				RestDocConstants.VERSION_FLAG, RestDocConstants.VERSION });
+				RestDocConstants.VERSION_FLAG, RestDocConstants.VERSION
+				});
 	}
 
 	/**
@@ -147,6 +157,12 @@ public class Generator {
 				logger.log(Level.INFO, "Updating flag " + flagName + " value = " + flagValue);
 			} else if (RestDocConstants.DOC_CSS_PATH_FLAG.equals(flagName)) {
 				docCssPath = flagValue;
+				logger.log(Level.INFO, "Updating flag " + flagName + " value = " + flagValue);
+			} else if (RestDocConstants.REQUEST_EXAMPLE_GENERATOR_CLASS_FLAG.equals(flagName)) {
+				requestExampleGeberatorName = flagValue;
+				logger.log(Level.INFO, "Updating flag " + flagName + " value = " + flagValue);
+			} else if (RestDocConstants.RESPONSE_EXAMPLE_GENERATOR_CLASS_FLAG.equals(flagName)) {
+				responseExampleGeneratorName = flagValue;
 				logger.log(Level.INFO, "Updating flag " + flagName + " value = " + flagValue);
 			}
 		}
@@ -258,7 +274,8 @@ public class Generator {
 
 	}
 
-	private static List<DocController> generateControllers(final ClassDoc[] classes) {
+	private static List<DocController> generateControllers(final ClassDoc[] classes) 
+			throws Exception {
 		List<DocController> controllersList = new LinkedList<DocController>();
 		for (ClassDoc classDoc : classes) {
 			List<DocController> controllers = generateControllers(classDoc);
@@ -270,7 +287,8 @@ public class Generator {
 		return controllersList;
 	}
 
-	private static List<DocController> generateControllers(final ClassDoc classDoc) {
+	private static List<DocController> generateControllers(final ClassDoc classDoc) 
+			throws Exception {
 		List<DocController> controllers = new LinkedList<DocController>();		
 		List<DocAnnotation> annotations = generateAnnotations(classDoc.annotations());
 		
@@ -317,7 +335,8 @@ public class Generator {
 	}
 
 	private static SortedMap<String, DocMethod> generateMethods(
-			final MethodDoc[] methods) {
+			final MethodDoc[] methods) 
+					throws Exception {
 		SortedMap<String, DocMethod> docMethods = new TreeMap<String, DocMethod>();
 
 		for (MethodDoc methodDoc : methods) {
@@ -361,28 +380,107 @@ public class Generator {
 	}
 
 	private static DocHttpMethod generateHttpMethod(final MethodDoc methodDoc,
-			final String httpMethodName, final List<DocAnnotation> annotations) {
+			final String httpMethodName, final List<DocAnnotation> annotations) 
+					throws Exception {
 
 		DocHttpMethod httpMethod = new DocHttpMethod(methodDoc.name(),
 				httpMethodName);
 		httpMethod.setDescription(methodDoc.commentText());
 		httpMethod.setParams(generateParameters(methodDoc));
 		httpMethod.setReturnDetails(generateReturnDetails(methodDoc));
-		httpMethod.setJsonResponseExample(Utils
-				.getJsonResponseExampleAnnotation(annotations));
-		httpMethod.setJsonRequesteExample(Utils
-				.getJsonRequestExampleAnnotation(annotations));
+		generateExamples(httpMethod, annotations);
 		httpMethod.setPossibleResponseStatuses(Utils
 				.getPossibleResponseStatusesAnnotation(annotations));
 
 		if (StringUtils.isBlank(httpMethod.getHttpMethodName())) {
-			throw new IllegalArgumentException(
-					"method "
-							+ methodDoc.name()
-							+ " is missing request mapping annotation's method (http method).");
+			throw new IllegalArgumentException("method " + methodDoc.name() 
+					+  " is missing request mapping annotation's method (http method).");
 		}
 
 		return httpMethod;
+	}
+
+	private static void generateExamples(final DocHttpMethod httpMethod,
+			final List<DocAnnotation> annotations) 
+					throws Exception {
+		DocJsonResponseExample jsonResponseExampleAnnotation = Utils.getJsonResponseExampleAnnotation(annotations);
+		DocJsonRequestExample jsonRequestExampleAnnotation = Utils.getJsonRequestExampleAnnotation(annotations);
+		
+		String requestExample;
+		if (jsonRequestExampleAnnotation != null) {
+			httpMethod.setJsonRequesteExample(jsonRequestExampleAnnotation);
+			requestExample = jsonRequestExampleAnnotation.generateJsonRequestBody();
+		} else {
+			requestExample = generateRequestExmple(httpMethod);
+		}
+		httpMethod.setRequestExample(requestExample);
+
+		String responseExample;
+		if (jsonResponseExampleAnnotation != null) {
+			httpMethod.setJsonResponseExample(jsonResponseExampleAnnotation);
+			responseExample = jsonResponseExampleAnnotation.generateJsonResponseBody();
+		} else {			
+			responseExample = generateResponseExample(httpMethod);
+		}
+		httpMethod.setResponseExample(responseExample);
+		
+	}
+
+	private static String generateRequestExmple(final DocHttpMethod httpMethod) 
+			throws Exception {
+		IDocExampleGenerator generator;
+		if (requestExampleGeberatorName != null) {
+			Class<?> reqExGenClass = Class.forName(requestExampleGeberatorName);
+			if (!reqExGenClass.isAssignableFrom(IDocExampleGenerator.class)) {
+				throw new IllegalArgumentException("request example generator class must implement " 
+						+ IDocExampleGenerator.class.getName());
+			} 
+			generator = (IDocExampleGenerator) reqExGenClass.newInstance();
+		} else {
+			generator = new DocDefaultExampleGenerator();
+		}
+		DocParameter requestBodyParameter = httpMethod.getRequestBodyParameter();
+		if (requestBodyParameter == null) {
+			return "Request has no body.";
+		}
+		String paramTypeName = requestBodyParameter.getType().qualifiedTypeName();
+		Class<?> requestParamType = ClassUtils.getClass(paramTypeName);
+		String generateExample = null;
+		try {
+			generateExample = generator.generateExample(requestParamType);
+		} catch (Exception e) {
+			logger.warning("Could not create request example for " + httpMethod.getMethodSignatureName() 
+					+ " error - " + e.getMessage());
+		}
+		return generateExample;
+	}
+
+	private static String generateResponseExample(final DocHttpMethod httpMethod) 
+			throws Exception {
+		IDocExampleGenerator generator;
+		if (responseExampleGeneratorName != null) {
+			Class<?> resExGenClass = Class.forName(responseExampleGeneratorName);
+			if (!resExGenClass.isAssignableFrom(IDocExampleGenerator.class)) {
+				throw new IllegalArgumentException("response example generator class must implement " 
+						+ IDocExampleGenerator.class.getName());
+			} 
+			generator = (IDocExampleGenerator) resExGenClass.newInstance();
+			
+		} else {
+			generator = new DocDefaultExampleGenerator();
+		}
+		Type returnType = httpMethod.getReturnDetails().getReturnType();
+		String typeName = returnType.qualifiedTypeName();
+		String generateExample  = null;
+		try {
+			Class<?> returnValueClass = ClassUtils.getClass(typeName);
+			generateExample = generator.generateExample(returnValueClass);
+		} catch (Exception e) {
+			logger.warning("Could not create request example for method: " + httpMethod.getMethodSignatureName() 
+					+ ", error - " + e);
+		}
+		
+		return generateExample;
 	}
 
 	private static List<DocParameter> generateParameters(final MethodDoc methodDoc) {

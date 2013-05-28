@@ -77,48 +77,48 @@
 					#########################################################
 					## Request 
 					#########################################################
-					#if($httpMethod.getJsonRequestExample()) 
-						#set($request = $httpMethod.getJsonRequestExample())
-						#set($jsonRequest = $request.generateJsonRequestBody())
+					#set($requestExample = $httpMethod.getRequestExample())
+					#if($requestExample) 
 						<h3>Request</h3>
-						#if($jsonRequest && !$jsonRequest.isEmpty())
 							<div class="panel">
 								<div class="panelHeader">
 									Request body for a $httpMethodName on $methodUri
 								</div>
 								<div class="panelContent">
-									<pre class="code">$jsonRequest</pre>
+									<pre class="code">$requestExample</pre>
 								</div>
 							</div>
-						#else
-							<p>Request has no body.</p>
+						#set($jsonRequest = $httpMethod.getJsonRequestExample())
+						#if($jsonRequest && !$jsonRequest.isEmpty())
+							#if($request.getComments() && !$request.getComments().isEmpty())
+								<p>$request.getComments()</p>
+							#end
 						#end
-						#if($request.getComments() && !$request.getComments().isEmpty())
-							<p>$request.getComments()</p>
-						#end
+					#else
+						<p>Request has no body.</p>
 					#end
 					#########################################################
 					## Response 
 					#########################################################
-					#if($httpMethod.getJsonResponseExample())
-						#set($response = $httpMethod.getJsonResponseExample())
-						#set($jsonResponse = $response.generateJsonResponseBody())
+					#set($responseExample = $httpMethod.getResponseExample())					
+					#if($responseExample)
 						<h3>Response</h3>
-						#if($jsonResponse && !$jsonResponse.isEmpty())
 							<div class="panel">
 								<div class="panelHeader">
 									Response to a $httpMethodName on $methodUri
 								</div>	
 								<div class="panelContent">
-									<pre class="code">$jsonResponse</pre>
+										<pre class="code">$responseExample</pre>
 								</div>
 							</div>
-						#else
-							<p>Response has no body.</p>
+						#set($jsonResponse = $httpMethod.getJsonResponseExample())
+						#if($jsonResponse && !$jsonResponse.isEmpty())
+							#if($jsonResponse.getComments() && !$jsonResponse.getComments().isEmpty())
+								<p>$response.getComments()</p>
+							#end
 						#end
-						#if($response.getComments() && !$response.getComments().isEmpty())
-							<p>$response.getComments()</p>
-						#end
+					#else	
+						<p>Response has no body.</p>
 					#end
 					#if($httpMethod.getPossibleResponseStatuses() && !$httpMethod.getPossibleResponseStatuses().isEmpty())
 						#set($possibleResponses = $httpMethod.getPossibleResponseStatuses())
