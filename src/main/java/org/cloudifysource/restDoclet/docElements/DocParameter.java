@@ -54,7 +54,11 @@ public class DocParameter {
 	}
 
 	public void setDescription(final String description) {
-		this.description = description;
+		String trimedDescription = description.trim();
+		if (description.startsWith("-")) {
+			trimedDescription = description.substring(1).trim();
+		} 
+		this.description = trimedDescription;
 	}
 
 	/**

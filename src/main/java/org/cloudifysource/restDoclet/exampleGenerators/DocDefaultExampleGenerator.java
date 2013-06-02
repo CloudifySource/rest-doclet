@@ -19,7 +19,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  * Creates a default example - 
- * 		creates a JSON String out of an instantiated random valued object of the given clazz. 
+ * 		creates a JSON format of an instantiated random valued object of the given clazz. 
  * @author yael
  *
  */
@@ -28,8 +28,17 @@ public class DocDefaultExampleGenerator implements
 
 	@Override
 	public String generateExample(final Class<?> clazz) throws Exception {
-		Object newInstance = clazz.newInstance();
+		if (clazz.isInterface()) {
+			return "Could not generate the example, the given class is an interface [" + clazz.getName() + "].";
+		}
+		Object newInstance = null;
+		if (clazz.isPrimitive()) {
+			newInstance = PrimitiveExampleValues.getValue(clazz);
+		}
+		Class<?> classToInstantiate = clazz;
+		if (newInstance == null) {
+			newInstance = classToInstantiate.newInstance();
+		}
 		return new ObjectMapper().writeValueAsString(newInstance);
 	}
-
 }

@@ -116,11 +116,11 @@ public final class RestDocConstants {
 	/**
 	 * 
 	 */
-	public static final String REQUEST_EXAMPLE_GENERATOR_CLASS_FLAG = "-requestExampleGeneratorClass";
+	public static final String REQUEST_EXAMPLE_GENERATOR_CLASS_FLAG = "-requestExample";
 	/**
 	 * 
 	 */
-	public static final String RESPONSE_EXAMPLE_GENERATOR_CLASS_FLAG = "-responseExampleGeneratorClass";
+	public static final String RESPONSE_EXAMPLE_GENERATOR_CLASS_FLAG = "-responseExample";
 	/**
 	 * 
 	 */

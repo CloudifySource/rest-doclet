@@ -87,8 +87,11 @@ public class Generator {
 	private static String responseExampleGeneratorName;
 	
 
-	private static final Logger logger = Logger.getLogger(Generator.class
-			.getName());
+	private static final Logger logger = Logger.getLogger(Generator.class.getName());
+	private static final String REQUEST_HAS_NO_BODY_MSG = "request has no body";
+	private static final String RESPONSE_HAS_NO_BODY_MSG = "response has no body";
+	private static final String FAILED_TO_CREATE_REQUEST_EXAMPLE = "failed to create request example";
+	private static final String FAILED_TO_CREATE_RESPONSE_EXAMPLE = "failed to create response example";
 
 	/**
 	 * 
@@ -441,16 +444,18 @@ public class Generator {
 		}
 		DocParameter requestBodyParameter = httpMethod.getRequestBodyParameter();
 		if (requestBodyParameter == null) {
-			return "Request has no body.";
+			return REQUEST_HAS_NO_BODY_MSG;
 		}
 		String paramTypeName = requestBodyParameter.getType().qualifiedTypeName();
 		Class<?> requestParamType = ClassUtils.getClass(paramTypeName);
 		String generateExample = null;
 		try {
 			generateExample = generator.generateExample(requestParamType);
+			generateExample  = Utils.getIndentJson(generateExample);
 		} catch (Exception e) {
 			logger.warning("Could not create request example for " + httpMethod.getMethodSignatureName() 
 					+ " error - " + e.getMessage());
+			generateExample = FAILED_TO_CREATE_REQUEST_EXAMPLE;
 		}
 		return generateExample;
 	}
@@ -459,6 +464,7 @@ public class Generator {
 			throws Exception {
 		IDocExampleGenerator generator;
 		if (responseExampleGeneratorName != null) {
+			logger.info("responseExampleGeneratorName is: " + responseExampleGeneratorName);
 			Class<?> resExGenClass = Class.forName(responseExampleGeneratorName);
 			if (!resExGenClass.isAssignableFrom(IDocExampleGenerator.class)) {
 				throw new IllegalArgumentException("response example generator class must implement " 
@@ -471,13 +477,18 @@ public class Generator {
 		}
 		Type returnType = httpMethod.getReturnDetails().getReturnType();
 		String typeName = returnType.qualifiedTypeName();
+		if (typeName.equals(void.class.getName())) {
+			return RESPONSE_HAS_NO_BODY_MSG;
+		}
 		String generateExample  = null;
 		try {
 			Class<?> returnValueClass = ClassUtils.getClass(typeName);
 			generateExample = generator.generateExample(returnValueClass);
+			generateExample = Utils.getIndentJson(generateExample);
 		} catch (Exception e) {
 			logger.warning("Could not create request example for method: " + httpMethod.getMethodSignatureName() 
 					+ ", error - " + e);
+			generateExample = FAILED_TO_CREATE_RESPONSE_EXAMPLE;
 		}
 		
 		return generateExample;
