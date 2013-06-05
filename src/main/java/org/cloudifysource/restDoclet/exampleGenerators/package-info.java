@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+ * Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,22 +12,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *******************************************************************************/
-package org.cloudifysource.restDoclet.annotations;
+ ******************************************************************************/
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
+/**************************
+ * The interface and a default class for generating request and response examples.
+ *****************************/
 
-/**
- * 
- * <P>Annotation to specify that a method is internal method.
- * 
- * @author yael
- *
- */
-@Target({ElementType.METHOD })
-@Documented
-public @interface InternalMethod {
+package org.cloudifysource.restDoclet.exampleGenerators;
 
-}

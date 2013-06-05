@@ -53,6 +53,10 @@ public class DocParameter {
 		return description;
 	}
 
+	/**
+	 * 
+	 * @param description .
+	 */
 	public void setDescription(final String description) {
 		String trimedDescription = description.trim();
 		if (description.startsWith("-")) {

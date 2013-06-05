@@ -29,7 +29,8 @@ public class DocDefaultExampleGenerator implements
 	@Override
 	public String generateExample(final Class<?> clazz) throws Exception {
 		if (clazz.isInterface()) {
-			return "Could not generate the example, the given class is an interface [" + clazz.getName() + "].";
+			throw new InstantiationException(
+					"the given class is an interface [" + clazz.getName() + "].");
 		}
 		Object newInstance = null;
 		if (clazz.isPrimitive()) {
