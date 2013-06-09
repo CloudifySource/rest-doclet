@@ -96,7 +96,7 @@ public class Generator {
 	private String docPath;
 	private String version;
 	private String docCssPath;
-	private static String requestExampleGeberatorName;
+	private static String requestExampleGeneratorName;
 	private static String responseExampleGeneratorName;
 	private static IDocExampleGenerator requestExampleGenerator;
 	private static IDocExampleGenerator responseExampleGenerator;
@@ -152,7 +152,6 @@ public class Generator {
 	private void setFlags(final String[][] options) {
 		int flagPos = 0;
 		int contentPos = 1;
-
 		for (int i = 0; i < options.length; i++) {
 			String flagName = options[i][flagPos];
 			String flagValue = null;
@@ -172,7 +171,7 @@ public class Generator {
 				docCssPath = flagValue;
 				logger.log(Level.INFO, "Updating flag " + flagName + " value = " + flagValue);
 			} else if (RestDocConstants.REQUEST_EXAMPLE_GENERATOR_CLASS_FLAG.equals(flagName)) {
-				requestExampleGeberatorName = flagValue;
+				requestExampleGeneratorName = flagValue;
 				logger.log(Level.INFO, "Updating flag " + flagName + " value = " + flagValue);
 			} else if (RestDocConstants.RESPONSE_EXAMPLE_GENERATOR_CLASS_FLAG.equals(flagName)) {
 				responseExampleGeneratorName = flagValue;
@@ -202,41 +201,48 @@ public class Generator {
 		if (StringUtils.isBlank(docCssPath)) {
 			docCssPath = RestDocConstants.DOC_CSS_PATH;
 		}
-		
-		requestExampleGenerator = initExampleGenerator(requestExampleGeberatorName, "request");
+
+		requestExampleGenerator = initExampleGenerator(requestExampleGeneratorName, "request");
 		responseExampleGenerator = initExampleGenerator(responseExampleGeneratorName, "resposne");
+		logger.log(Level.INFO, "initExampleGenerator.");
 	}
 
-	private IDocExampleGenerator initExampleGenerator(final String exampleGeberatorName, final String exampleType) {
+	private IDocExampleGenerator initExampleGenerator(final String exampleGeneratorName, final String exampleType) {
 		IDocExampleGenerator exampleGenerator = null;
-		if (StringUtils.isBlank(exampleGeberatorName)) {
+		if (StringUtils.isBlank(exampleGeneratorName)) {
 			exampleGenerator = new DocDefaultExampleGenerator();
+			logger.log(Level.INFO, 
+					"No custom example generator given, using a default " 
+					+ exampleType + " example generator instead.");
 		} else {
 			try {
-				Class<?> reqExGenClass = Class.forName(exampleGeberatorName);
+				Class<?> reqExGenClass = Class.forName(exampleGeneratorName);
 				if (!IDocExampleGenerator.class.isAssignableFrom(reqExGenClass)) {
-					logger.warning("The given " + exampleType + " example generator class [" + exampleGeberatorName 
+					logger.log(Level.WARNING, 
+							"The given " + exampleType 
+							+ " example generator class [" + exampleGeneratorName 
 							+ "] does not implement "  + IDocExampleGenerator.class.getName() 
 							+ ". Using a default generator instead.");
 					exampleGenerator = new DocDefaultExampleGenerator();
 				} else {
 					try {
 						exampleGenerator = (IDocExampleGenerator) reqExGenClass.newInstance();
-						logger.info("Updating " + exampleType + " example generator class: " + exampleGenerator.getClass().getName());
+						logger.log(Level.INFO, "Updating " + exampleType + " example generator class: " 
+								+ exampleGenerator.getClass().getName());
 					} catch (Exception e) {
-						logger.warning(
+						logger.log(Level.WARNING,
 								"Cought " + e.getClass().getName() 
 								+ " when tried to instantiate the " + exampleType + " example generator class - " 
-								+ exampleGeberatorName 
+								+ exampleGeneratorName 
 								+ ". Using a default generator instead.");
 						exampleGenerator = new DocDefaultExampleGenerator();
 					}
 				}
 			} catch (ClassNotFoundException e) {
-				logger.warning(
+				logger.log(Level.WARNING,
 						"Cought ClassNotFoundException when tried to load the " + exampleType 
 						+ " example generator class - " 
-						+ exampleGeberatorName 
+						+ exampleGeneratorName 
 						+ ". Using a default generator instead.\nSystem classpath: " 
 						+ System.getProperty("java.class.path"));
 				exampleGenerator = new DocDefaultExampleGenerator();
@@ -253,6 +259,8 @@ public class Generator {
 
 		// GENERATE DOCUMENTATIONS IN DOC CLASSES
 		List<DocController> controllers = generateControllers(documentation.classes());
+		logger.log(Level.INFO, "Generated " + controllers.size()
+				+ " controlles, creating HTML documentation using velocity template.");
 
 		// TRANSLATE DOC CLASSES INTO HTML DOCUMENTATION USING VELOCITY TEMPLATE
 		String generatedHtml = generateHtmlDocumentation(controllers);
