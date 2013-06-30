@@ -124,6 +124,10 @@ public final class RestDocConstants {
 	/**
 	 * 
 	 */
+	public static final String REQUEST_BODY_PARAM_FILTER_CLASS_FLAG = "-requestBodyParamFilter";
+	/**
+	 * 
+	 */
 	public static final String CONTROLLER_ANNOTATION = "Controller";
 
 	/**
@@ -425,6 +429,11 @@ public final class RestDocConstants {
 			return this.reasonPhrase;
 		}
 	}
+
+	public static final String FAILED_TO_CREATE_REQUEST_EXAMPLE = 
+	"Failed to generate the request body example out of the request parameter type.";
+	public static final String FAILED_TO_CREATE_RESPONSE_EXAMPLE = 
+	"Failed to generate the response body example out of the return value type.";
 	
 	private RestDocConstants() {
 		

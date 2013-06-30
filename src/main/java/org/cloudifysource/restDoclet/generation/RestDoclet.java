@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import org.cloudifysource.restDoclet.constants.RestDocConstants;
 
 import com.sun.javadoc.Doclet;
+import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
 
 /**
@@ -63,10 +64,20 @@ public class RestDoclet extends Doclet {
 				|| RestDocConstants.VERSION_FLAG.equals(option)
 				|| RestDocConstants.DOC_CSS_PATH_FLAG.equals(option)
 				|| RestDocConstants.REQUEST_EXAMPLE_GENERATOR_CLASS_FLAG.equals(option)
-				|| RestDocConstants.RESPONSE_EXAMPLE_GENERATOR_CLASS_FLAG.equals(option)) {
+				|| RestDocConstants.RESPONSE_EXAMPLE_GENERATOR_CLASS_FLAG.equals(option)
+				|| RestDocConstants.REQUEST_BODY_PARAM_FILTER_CLASS_FLAG.equals(option)) {
 			return 2;
 		}
 		return 0;
 	}
+	
+	/**
+	    * NOTE: Without this method present and returning LanguageVersion.JAVA_1_5,
+	    *       Javadoc will not process generics because it assumes LanguageVersion.JAVA_1_1.
+	    * @return language version (hard coded to LanguageVersion.JAVA_1_5)
+	    */
+	   public static LanguageVersion languageVersion() {
+	      return LanguageVersion.JAVA_1_5;
+	   }
 
 }

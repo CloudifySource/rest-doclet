@@ -19,9 +19,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +28,6 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -48,8 +44,10 @@ import org.cloudifysource.restDoclet.docElements.DocMethod;
 import org.cloudifysource.restDoclet.docElements.DocParameter;
 import org.cloudifysource.restDoclet.docElements.DocRequestMappingAnnotation;
 import org.cloudifysource.restDoclet.docElements.DocReturnDetails;
+import org.cloudifysource.restDoclet.exampleGenerators.DefaultRequestBodyParameterFilter;
 import org.cloudifysource.restDoclet.exampleGenerators.DocDefaultExampleGenerator;
 import org.cloudifysource.restDoclet.exampleGenerators.IDocExampleGenerator;
+import org.cloudifysource.restDoclet.exampleGenerators.IRequestBodyParamFilter;
 
 import com.sun.javadoc.AnnotationDesc;
 import com.sun.javadoc.ClassDoc;
@@ -83,10 +81,6 @@ public class Generator {
 	private static final Logger logger = Logger.getLogger(Generator.class.getName());
 	private static final String REQUEST_HAS_NO_BODY_MSG = "request has no body";
 	private static final String RESPONSE_HAS_NO_BODY_MSG = "response has no body";
-	private static final String FAILED_TO_CREATE_REQUEST_EXAMPLE = 
-			"Failed to generate the request body example out of the request parameter type.";
-	private static final String FAILED_TO_CREATE_RESPONSE_EXAMPLE = 
-			"Failed to generate the response body example out of the return value type.";
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	private final RootDoc documentation;
@@ -100,6 +94,8 @@ public class Generator {
 	private static String responseExampleGeneratorName;
 	private static IDocExampleGenerator requestExampleGenerator;
 	private static IDocExampleGenerator responseExampleGenerator;
+	private static String requestBodyParamFilterName;
+	private static IRequestBodyParamFilter requestBodyParamFilter;
 	
 
 
@@ -176,6 +172,9 @@ public class Generator {
 			} else if (RestDocConstants.RESPONSE_EXAMPLE_GENERATOR_CLASS_FLAG.equals(flagName)) {
 				responseExampleGeneratorName = flagValue;
 				logger.log(Level.INFO, "Updating flag " + flagName + " value = " + flagValue);
+			} else if (RestDocConstants.REQUEST_BODY_PARAM_FILTER_CLASS_FLAG.equals(flagName)) {
+				requestBodyParamFilterName = flagValue;
+				logger.log(Level.INFO, "Updating flag " + flagName + " value = " + flagValue);
 			}
 		}
 
@@ -202,53 +201,104 @@ public class Generator {
 			docCssPath = RestDocConstants.DOC_CSS_PATH;
 		}
 
-		requestExampleGenerator = initExampleGenerator(requestExampleGeneratorName, "request");
-		responseExampleGenerator = initExampleGenerator(responseExampleGeneratorName, "resposne");
-		logger.log(Level.INFO, "initExampleGenerator.");
+		initRequestExampleGenerator(requestExampleGeneratorName);
+		logger.log(Level.INFO, "Updating request example generator class to " 
+		+ requestExampleGenerator.getClass().getName());
+		initResponseExampleGenerator(responseExampleGeneratorName);
+		logger.log(Level.INFO, "Updating response example generator class to " 
+		+ responseExampleGenerator.getClass().getName());
+		
+		initRequestBodyParamFilter();
+		logger.log(Level.INFO, "Updating request body parameter filter class to " 
+		+ requestBodyParamFilter.getClass().getName());
 	}
-
-	private IDocExampleGenerator initExampleGenerator(final String exampleGeneratorName, final String exampleType) {
-		IDocExampleGenerator exampleGenerator = null;
+	
+	
+	private void initRequestBodyParamFilter() {
+		if (StringUtils.isBlank(requestBodyParamFilterName)) {
+			requestBodyParamFilter = new DefaultRequestBodyParameterFilter();
+		} else {
+			try {
+			Class<?> clazz = Class.forName(requestBodyParamFilterName);
+			requestBodyParamFilter = (IRequestBodyParamFilter) clazz.newInstance(); 
+			} catch (Exception e) {
+				logger.log(Level.WARNING,
+						"Cought " + e.getClass().getName() 
+						+ " when tried to load and instantiate class " 
+						+ requestBodyParamFilterName 
+						+ ". Using a default filter class instead.");
+				requestBodyParamFilter = new DefaultRequestBodyParameterFilter();
+			}
+		}
+	}
+	
+	private void initRequestExampleGenerator(final String exampleGeneratorName) {
+		IDocExampleGenerator exampleGeneratorClass = 
+				getExampleGeneratorClass(
+						IDocExampleGenerator.class, 
+						exampleGeneratorName, 
+						"request");
+		if (exampleGeneratorClass == null) {
+			requestExampleGenerator = new DocDefaultExampleGenerator();
+		} else {
+			requestExampleGenerator = exampleGeneratorClass;
+		}
+	}
+	
+	private void initResponseExampleGenerator(final String exampleGeneratorName) {
+		IDocExampleGenerator exampleGeneratorClass = 
+				getExampleGeneratorClass(
+						IDocExampleGenerator.class, 
+						exampleGeneratorName, 
+						"response");
+		if (exampleGeneratorClass == null) {
+			responseExampleGenerator = new DocDefaultExampleGenerator();
+		} else {
+			responseExampleGenerator = exampleGeneratorClass;
+		}
+	}
+	
+	private <T> T getExampleGeneratorClass(
+			final Class<T> expectedInterface, 
+			final String exampleGeneratorName, 
+			final String exampleType) {
 		if (StringUtils.isBlank(exampleGeneratorName)) {
-			exampleGenerator = new DocDefaultExampleGenerator();
 			logger.log(Level.INFO, 
 					"No custom example generator given, using a default " 
 					+ exampleType + " example generator instead.");
-		} else {
-			try {
-				Class<?> reqExGenClass = Class.forName(exampleGeneratorName);
-				if (!IDocExampleGenerator.class.isAssignableFrom(reqExGenClass)) {
-					logger.log(Level.WARNING, 
-							"The given " + exampleType 
-							+ " example generator class [" + exampleGeneratorName 
-							+ "] does not implement "  + IDocExampleGenerator.class.getName() 
-							+ ". Using a default generator instead.");
-					exampleGenerator = new DocDefaultExampleGenerator();
-				} else {
-					try {
-						exampleGenerator = (IDocExampleGenerator) reqExGenClass.newInstance();
-						logger.log(Level.INFO, "Updating " + exampleType + " example generator class: " 
-								+ exampleGenerator.getClass().getName());
-					} catch (Exception e) {
-						logger.log(Level.WARNING,
-								"Cought " + e.getClass().getName() 
-								+ " when tried to instantiate the " + exampleType + " example generator class - " 
-								+ exampleGeneratorName 
-								+ ". Using a default generator instead.");
-						exampleGenerator = new DocDefaultExampleGenerator();
-					}
-				}
-			} catch (ClassNotFoundException e) {
-				logger.log(Level.WARNING,
-						"Cought ClassNotFoundException when tried to load the " + exampleType 
-						+ " example generator class - " 
-						+ exampleGeneratorName 
-						+ ". Using a default generator instead.\nSystem classpath: " 
-						+ System.getProperty("java.class.path"));
-				exampleGenerator = new DocDefaultExampleGenerator();
-			}
+			return null;
+		} 
+
+		Class<?> reqExGenClass;
+		try {
+			reqExGenClass = Class.forName(exampleGeneratorName);
+		}	catch (ClassNotFoundException e) {
+			logger.log(Level.WARNING,
+					"Cought ClassNotFoundException when tried to load the " + exampleType 
+					+ " example generator class - " 
+					+ exampleGeneratorName 
+					+ ". Using a default generator instead.");
+			return null;
 		}
-		return exampleGenerator;
+		if (!expectedInterface.isAssignableFrom(reqExGenClass)) {
+			logger.log(Level.WARNING, 
+					"The given " + exampleType 
+					+ " example generator class [" + exampleGeneratorName 
+					+ "] does not implement "  + expectedInterface.getName() 
+					+ ". Using a default generator instead.");
+			return null;
+		}
+
+		try {
+			return expectedInterface.cast(reqExGenClass.newInstance());
+		} catch (Exception e) {
+			logger.log(Level.WARNING,
+					"Cought exception - " + e.getClass().getName() 
+					+ " when tried to instantiate the " + exampleType 
+					+ " example generator class [ " + exampleGeneratorName 
+					+ "]. Using a default generator instead.");
+			return null;
+		}
 	}
 
 	/**
@@ -258,7 +308,8 @@ public class Generator {
 	public void run() throws Exception {
 
 		// GENERATE DOCUMENTATIONS IN DOC CLASSES
-		List<DocController> controllers = generateControllers(documentation.classes());
+		ClassDoc[] classes = documentation.classes();
+		List<DocController> controllers = generateControllers(classes);
 		logger.log(Level.INFO, "Generated " + controllers.size()
 				+ " controlles, creating HTML documentation using velocity template.");
 
@@ -443,7 +494,6 @@ public class Generator {
 	private static DocHttpMethod generateHttpMethod(final MethodDoc methodDoc,
 			final String httpMethodName, final List<DocAnnotation> annotations) 
 					throws Exception {
-
 		DocHttpMethod httpMethod = new DocHttpMethod(methodDoc.name(),
 				httpMethodName);
 		httpMethod.setDescription(methodDoc.commentText());
@@ -488,23 +538,29 @@ public class Generator {
 	}
 
 	private static String generateRequestExmple(final DocHttpMethod httpMethod) {
-		
-		DocParameter requestBodyParameter = httpMethod.getRequestBodyParameter();
-		if (requestBodyParameter == null) {
+				
+		List<DocParameter> params = httpMethod.getParams();
+		Type type = null;
+		for (DocParameter docParameter : params) {
+			if (requestBodyParamFilter.filter(httpMethod, docParameter)) {
+				type = docParameter.getType();	
+				break;
+			}
+		}  
+		if (type == null) {
 			return REQUEST_HAS_NO_BODY_MSG;
 		}
-		String paramTypeName = requestBodyParameter.getType().qualifiedTypeName();
 		String generateExample = null;
 		try {
-			Class<?> requestParamType = ClassUtils.getClass(paramTypeName);
-			generateExample = requestExampleGenerator.generateExample(requestParamType);
+			generateExample = requestExampleGenerator.generateExample(type);
 			generateExample  = Utils.getIndentJson(generateExample);
 		} catch (Exception e) {
 			logger.warning("Could not generate request example for method: " + httpMethod.getMethodSignatureName() 
-					+ " with the request parameter type [" + paramTypeName + "]. Exception was: " + e);
-			generateExample = FAILED_TO_CREATE_REQUEST_EXAMPLE + "."
+					+ " with the request parameter type " + type.qualifiedTypeName() 
+					+ ". Exception was: " + e);
+			generateExample = RestDocConstants.FAILED_TO_CREATE_REQUEST_EXAMPLE + "."
 					+ LINE_SEPARATOR 
-					+ "Request parameter type: " + paramTypeName + "."
+					+ "Parameter type: " + type.qualifiedTypeName() + "."
 					+ LINE_SEPARATOR 
 					+ "The exception caught was " + e;
 		}
@@ -519,13 +575,12 @@ public class Generator {
 		}
 		String generateExample  = null;
 		try {
-			Class<?> returnValueClass = ClassUtils.getClass(typeName);
-			generateExample = responseExampleGenerator.generateExample(returnValueClass);
+			generateExample = responseExampleGenerator.generateExample(returnType);
 			generateExample = Utils.getIndentJson(generateExample);
 		} catch (Exception e) {
 			logger.warning("Could not generate response example for method: " + httpMethod.getMethodSignatureName() 
 					+ " with the return value type [" + typeName + "]. Exception was: " + e);
-			generateExample = FAILED_TO_CREATE_RESPONSE_EXAMPLE
+			generateExample = RestDocConstants.FAILED_TO_CREATE_RESPONSE_EXAMPLE
 					+ LINE_SEPARATOR 
 					+ "Return value type: " + typeName + "."
 					+ LINE_SEPARATOR 
@@ -555,8 +610,7 @@ public class Generator {
 	}
 
 	private static DocReturnDetails generateReturnDetails(final MethodDoc methodDoc) {
-		DocReturnDetails returnDetails = new DocReturnDetails(
-				methodDoc.returnType());
+		DocReturnDetails returnDetails = new DocReturnDetails(methodDoc.returnType());
 		Tag[] returnTags = methodDoc.tags("return");
 		if (returnTags.length > 0) {
 			returnDetails.setDescription(returnTags[0].text());

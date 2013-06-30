@@ -1,4 +1,5 @@
 /*******************************************************************************
+
  * Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,21 +16,19 @@
  *******************************************************************************/
 package org.cloudifysource.restDoclet.exampleGenerators;
 
-import com.sun.javadoc.Type;
+import org.cloudifysource.restDoclet.docElements.DocHttpMethod;
+import org.cloudifysource.restDoclet.docElements.DocParameter;
 
 /**
  * 
  * @author yael
- * @since 0.5.0
+ *
  */
-public interface IDocExampleGenerator {
-	
-	/**
-	 * Creates an example of a request or a response for documentation of a certain REST method.
-	 * @param type
-	 * 			The type for which the example is generated.			
-	 * @return An example for the type. 
-	 * @throws Exception . 
-	 */
-	String generateExample(Type type) throws Exception;
+public class DefaultRequestBodyParameterFilter implements IRequestBodyParamFilter {
+
+	@Override
+	public boolean filter(final DocHttpMethod httpMethod, final DocParameter param) {
+		return param.getRequestBodyAnnotation() != null;
+	}
+
 }

@@ -18,6 +18,7 @@ package org.cloudifysource.restDoclet.docElements;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -33,12 +34,15 @@ public class DocHttpMethod {
 	private List<DocParameter> params;
 	private List<DocParameter> annotatedParams;
 	private DocParameter requestBodyParameter;
+	private List<DocParameter> requestParams;
+
 
 	private DocReturnDetails returnDetails;
 
 	private DocJsonRequestExample jsonRequestExample;
 	private DocJsonResponseExample jsonResponseExample;
 	private List<DocPossibleResponseStatusAnnotation> possibleResponseStatuses;
+	
 	private String requestExample;
 	private String responseExample;
 
@@ -92,21 +96,29 @@ public class DocHttpMethod {
 		for (DocParameter docParameter : params) {
 			List<DocAnnotation> annotations = docParameter.getAnnotations();
 			if (annotations != null && !annotations.isEmpty()) {
-				DocAnnotation requestBodyAnnotation = docParameter
-						.getRequestBodyAnnotation();
-				if (requestBodyAnnotation != null) {
-					requestBodyParameter = docParameter;
-				}
 				if (annotatedParams == null) {
 					annotatedParams = new LinkedList<DocParameter>();
 				}
 				annotatedParams.add(docParameter);
+				if (docParameter.getRequestBodyAnnotation() != null) {
+					requestBodyParameter = docParameter;
+				}
+				if (docParameter.getRequestParamAnnotation() != null) {
+					if (requestParams == null) {
+						requestParams = new LinkedList<DocParameter>();
+					}
+					requestParams.add(docParameter);
+				}
 			}
 		}
 	}
 	
 	public DocParameter getRequestBodyParameter() {
 		return this.requestBodyParameter;
+	}
+	
+	public List<DocParameter> getRequestParams() {
+		return this.requestParams;
 	}
 
 	public DocReturnDetails getReturnDetails() {

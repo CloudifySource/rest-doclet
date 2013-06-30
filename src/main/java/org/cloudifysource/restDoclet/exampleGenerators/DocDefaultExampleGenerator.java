@@ -15,19 +15,26 @@
  *******************************************************************************/
 package org.cloudifysource.restDoclet.exampleGenerators;
 
+import org.apache.commons.lang.ClassUtils;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.sun.javadoc.Type;
 
 /**
  * Creates a default example - 
- * 		creates a JSON format of an instantiated random valued object of the given clazz. 
+ * 		creates a JSON format of an instantiated object of the given clazz. 
  * @author yael
- *
+ * @since 0.5.0
  */
 public class DocDefaultExampleGenerator implements
 		IDocExampleGenerator {
 
-	@Override
-	public String generateExample(final Class<?> clazz) throws Exception {
+	private String generateJSON(final Type type) throws Exception {
+		Class<?> clazz = ClassUtils.getClass(type.qualifiedTypeName());
+		if (MultipartFile.class.getName().equals(clazz.getName())) {
+			return "\"file content\"";
+		}
 		if (clazz.isInterface()) {
 			throw new InstantiationException(
 					"the given class is an interface [" + clazz.getName() + "].");
@@ -41,5 +48,10 @@ public class DocDefaultExampleGenerator implements
 			newInstance = classToInstantiate.newInstance();
 		}
 		return new ObjectMapper().writeValueAsString(newInstance);
+	}
+
+	@Override
+	public String generateExample(final Type type) throws Exception {
+		return generateJSON(type);
 	}
 }
