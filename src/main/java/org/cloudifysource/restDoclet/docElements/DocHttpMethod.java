@@ -18,7 +18,6 @@ package org.cloudifysource.restDoclet.docElements;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**

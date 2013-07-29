@@ -470,8 +470,8 @@ public class Generator {
 			// get all URIs
 			String[] uriArray = requestMappingAnnotation.getValue();
 			if (uriArray == null || uriArray.length == 0) {
-				throw new IllegalArgumentException("method " + methodDoc.name() 
-						+ " is missing request mapping annotation's value (uri).");
+				uriArray = new String[1];
+				uriArray[0] = "";
 			}
 			for (String uri : uriArray) {
 				DocMethod docMethod = docMethods.get(uri);
