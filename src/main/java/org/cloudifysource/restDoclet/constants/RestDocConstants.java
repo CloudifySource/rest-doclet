@@ -390,7 +390,23 @@ public final class RestDocConstants {
 		/**
 		 * 
 		 */
+		CONTINUE(100, "Continue"),
+		/**
+		 * 
+		 */
+		SWITCHING_PROTOCOLS(101, "Switching Protocols"),
+		/**
+		 * 
+		 */
 		OK(200, "OK"),
+		/**
+		 * 
+		 */
+		CREATED(201, "Created"),
+		/**
+		 * 
+		 */
+		ACCEPTED(202, "Accepted"),
 		/**
 		 * 
 		 */
@@ -411,8 +427,20 @@ public final class RestDocConstants {
 		 * @return The response code.
 		 */
 		public static ResponseCodes fromCode(final int code) {
+			if (CONTINUE.getValue() == code) {
+				return CONTINUE;
+			}
+			if (SWITCHING_PROTOCOLS.getValue() == code) {
+				return SWITCHING_PROTOCOLS;
+			}
 			if (OK.getValue() == code) {
 				return OK;
+			}
+			if (CREATED.getValue() == code) {
+				return CREATED;
+			}
+			if (ACCEPTED.getValue() == code) {
+				return ACCEPTED;
 			}
 			if (INTERNAL_SERVER_ERROR.getValue() == code) {
 				return INTERNAL_SERVER_ERROR;
