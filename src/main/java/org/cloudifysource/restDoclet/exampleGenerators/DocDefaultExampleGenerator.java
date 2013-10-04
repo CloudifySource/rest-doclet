@@ -17,6 +17,7 @@ package org.cloudifysource.restDoclet.exampleGenerators;
 
 import org.apache.commons.lang.ClassUtils;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sun.javadoc.Type;
@@ -41,8 +42,17 @@ public class DocDefaultExampleGenerator implements
 			throw new InstantiationException(
 					"the given class is an interface [" + clazz.getName() + "].");
 		}
-		Object newInstance = objectCreator_.createObject(clazz);
-		return new ObjectMapper().writeValueAsString(newInstance);
+
+    Object newInstance;
+    if (clazz.isPrimitive()) {
+      newInstance = PrimitiveExampleValues.getValue(clazz);
+    }
+		else {
+      newInstance = objectCreator_.createObject(clazz);
+    }
+		return new ObjectMapper()
+            .configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false)
+            .writeValueAsString(newInstance);
 	}
 
   @Override

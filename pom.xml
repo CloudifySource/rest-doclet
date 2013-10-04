@@ -3,10 +3,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.cloudifysource</groupId>
 	<artifactId>rest-doclet</artifactId>
-	<version>0.5.3</version>
+	<version>0.5.4</version>
 
 	<properties>
-		<springVersion>3.1.3.RELEASE</springVersion>
+		<springVersion>3.2.4.RELEASE</springVersion>
 	</properties>
 
 	<dependencies>
@@ -34,6 +34,11 @@
 			<artifactId>spring-webmvc</artifactId>
 			<version>${springVersion}</version>
 		</dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${springVersion}</version>
+    </dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -60,7 +65,7 @@
       <artifactId>objenesis</artifactId>
       <version>1.2</version>
     </dependency>
-	</dependencies>
+  </dependencies>
 	<profiles>
         <profile>
             <id>default-profile</id>

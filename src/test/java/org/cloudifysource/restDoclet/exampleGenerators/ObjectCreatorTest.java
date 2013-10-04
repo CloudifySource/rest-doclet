@@ -35,6 +35,12 @@ public class ObjectCreatorTest {
   }
 
   @Test
+  public void setsAPrimitiveFieldOnAnObject() throws IllegalAccessException {
+    Fish fish = (Fish) objectCreator_.createObject(Fish.class);
+    assertThat(fish.getCount(), instanceOf(long.class));
+  }
+
+  @Test
   public void createsNestedClasses() throws IllegalAccessException {
     FishBowl fishBowl = (FishBowl) objectCreator_.createObject(FishBowl.class);
     assertThat(fishBowl.getFish(), instanceOf(Fish.class));
@@ -50,11 +56,53 @@ public class ObjectCreatorTest {
     assertThat(aquarium.getFishes().get(0).getName(), notNullValue());
   }
 
+  @Test
+  public void createsEmptyClasses() throws IllegalAccessException {
+    EmptyClass empty = (EmptyClass) objectCreator_.createObject(EmptyClass.class);
+  }
+
+  @Test
+  public void canCreateAnAbstractClass() throws IllegalAccessException {
+    ClassWithAnAbstractClassInside classInside =
+            (ClassWithAnAbstractClassInside) objectCreator_.createObject(ClassWithAnAbstractClassInside.class);
+
+    assertThat(classInside.getTheAbstractClass(), notNullValue());
+  }
+
+  @Test
+  public void canCallAbstractMethods() throws IllegalAccessException {
+    AbstractClass abstractClass = (AbstractClass) objectCreator_.createObject(AbstractClass.class);
+    assertThat(abstractClass.getFoo(), notNullValue());
+  }
+
+  static class EmptyClass {
+    public static final EmptyClass NOTHING = new EmptyClass();
+  }
+
+  static class ClassWithAnAbstractClassInside {
+    private AbstractClass abstractClass_;
+
+    public AbstractClass getTheAbstractClass() {
+      return abstractClass_;
+    }
+  }
+
+  static abstract class AbstractClass {
+    private String bar_;
+
+    public abstract String getFoo();
+  }
+
   static class Fish {
     private String name_;
+    private long count_;
 
     public String getName() {
       return name_;
+    }
+
+    public long getCount() {
+      return count_;
     }
   }
 
