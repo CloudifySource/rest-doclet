@@ -22,13 +22,15 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sun.javadoc.Type;
 
 /**
- * Creates a default example - 
- * 		creates a JSON format of an instantiated object of the given clazz. 
+ * Creates a default example -
+ * 		creates a JSON format of an instantiated object of the given clazz.
  * @author yael
  * @since 0.5.0
  */
 public class DocDefaultExampleGenerator implements
 		IDocExampleGenerator {
+
+  private ObjectCreator objectCreator_ = new ObjectCreator();
 
 	private String generateJSON(final Type type) throws Exception {
 		Class<?> clazz = ClassUtils.getClass(type.qualifiedTypeName());
@@ -39,18 +41,11 @@ public class DocDefaultExampleGenerator implements
 			throw new InstantiationException(
 					"the given class is an interface [" + clazz.getName() + "].");
 		}
-		Object newInstance = null;
-		if (clazz.isPrimitive()) {
-			newInstance = PrimitiveExampleValues.getValue(clazz);
-		}
-		Class<?> classToInstantiate = clazz;
-		if (newInstance == null) {
-			newInstance = classToInstantiate.newInstance();
-		}
+		Object newInstance = objectCreator_.createObject(clazz);
 		return new ObjectMapper().writeValueAsString(newInstance);
 	}
 
-	@Override
+  @Override
 	public String generateExample(final Type type) throws Exception {
 		return generateJSON(type);
 	}
