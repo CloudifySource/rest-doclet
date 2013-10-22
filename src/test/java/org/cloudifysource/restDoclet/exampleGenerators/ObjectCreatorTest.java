@@ -1,5 +1,6 @@
 package org.cloudifysource.restDoclet.exampleGenerators;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
@@ -8,7 +9,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 /**
  * @author edward
@@ -57,6 +61,12 @@ public class ObjectCreatorTest {
   }
 
   @Test
+  public void createClassWithEnumField() throws IllegalAccessException {
+    ClassWithEnumField response = (ClassWithEnumField) objectCreator_.createObject(ClassWithEnumField.class);
+    assertThat(response.getStatus(), is(ClassWithEnumField.Status.ACTIVATED));
+  }
+
+  @Test
   public void createsEmptyClasses() throws IllegalAccessException {
     EmptyClass empty = (EmptyClass) objectCreator_.createObject(EmptyClass.class);
   }
@@ -73,6 +83,12 @@ public class ObjectCreatorTest {
   public void canCallAbstractMethods() throws IllegalAccessException {
     AbstractClass abstractClass = (AbstractClass) objectCreator_.createObject(AbstractClass.class);
     assertThat(abstractClass.getFoo(), notNullValue());
+  }
+
+  @Test
+  public void canCreateDateField() throws IllegalAccessException {
+    DateClass dateClass = (DateClass) objectCreator_.createObject(DateClass.class);
+    assertThat(dateClass.getDate(), not(nullValue()));
   }
 
   static class EmptyClass {
@@ -119,6 +135,27 @@ public class ObjectCreatorTest {
 
     public List<Fish> getFishes() {
       return fishes_;
+    }
+  }
+
+  public static class ClassWithEnumField {
+    public enum Status {
+      ACTIVATED,
+      PENDING
+    }
+
+    private Status status_ = Status.ACTIVATED;
+
+    public Status getStatus() {
+      return status_;
+    }
+  }
+
+  public static class DateClass {
+    private Date date_;
+
+    public Date getDate() {
+      return date_;
     }
   }
 }

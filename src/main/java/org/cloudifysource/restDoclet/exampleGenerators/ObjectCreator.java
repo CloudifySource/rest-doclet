@@ -4,15 +4,22 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * @author Ed Kimber
@@ -21,10 +28,11 @@ public class ObjectCreator {
 
   private Objenesis objenesis_;
   private static final Logger logger_ = Logger.getLogger(ObjectCreator.class.getName());
-
+  private List<ExampleCreator> exampleCreators_;
 
   public ObjectCreator() {
     objenesis_ = new ObjenesisStd();
+    exampleCreators_ = newArrayList(primitiveCreator_, stringCreator_, enumCreator_, dateCreator_, listCreator_);
   }
 
   public Object createObject(final Class<?> cls) throws IllegalAccessException {
@@ -98,18 +106,12 @@ public class ObjectCreator {
   }
 
   private Object createValueForType(final Class<?> cls) throws IllegalAccessException {
-    if (String.class.isAssignableFrom(cls)) {
-      return "foo";
+    for (ExampleCreator creator : exampleCreators_) {
+      if (creator.match(cls)) {
+        return creator.create(cls);
+      }
     }
-    else if (List.class.isAssignableFrom(cls)) {
-      return createListOfType(Object.class);
-    }
-    else if (cls.isPrimitive()) {
-      return PrimitiveExampleValues.getValue(cls);
-    }
-    else {
-      return createObject(cls);
-    }
+    return createObject(cls);
   }
 
   @SuppressWarnings("unchecked")
@@ -125,4 +127,69 @@ public class ObjectCreator {
     return Modifier.isInterface(modifiers) || Modifier.isAbstract(modifiers);
   }
 
+  interface ExampleCreator {
+    boolean match(Class cls);
+    Object create(Class cls) throws IllegalAccessException;
+  }
+
+  private static ExampleCreator stringCreator_ = new ExampleCreator() {
+
+    @Override
+    public boolean match(Class cls) {
+      return String.class.isAssignableFrom(cls);
+    }
+
+    @Override
+    public Object create(final Class cls) {
+      return "foo";
+    }
+  };
+
+  private static ExampleCreator primitiveCreator_ = new ExampleCreator() {
+    @Override
+    public boolean match(final Class cls) {
+      return cls.isPrimitive();
+    }
+
+    @Override
+    public Object create(final Class cls) {
+      return PrimitiveExampleValues.getValue(cls);
+    }
+  };
+
+  private static ExampleCreator enumCreator_ = new ExampleCreator() {
+    @Override
+    public boolean match(final Class cls) {
+      return cls.isEnum();
+    }
+
+    @Override
+    public Object create(final Class cls) {
+      return Enum.valueOf((Class<? extends Enum>) cls, cls.getEnumConstants()[0].toString());
+    }
+  };
+
+  private ExampleCreator listCreator_ = new ExampleCreator() {
+    @Override
+    public boolean match(final Class cls) {
+      return List.class.isAssignableFrom(cls);
+    }
+
+    @Override
+    public Object create(final Class cls) throws IllegalAccessException {
+      return createListOfType(Object.class);
+    }
+  };
+
+  private ExampleCreator dateCreator_ = new ExampleCreator() {
+    @Override
+    public boolean match(final Class cls) {
+      return Date.class.isAssignableFrom(cls);
+    }
+
+    @Override
+    public Object create(final Class cls) throws IllegalAccessException {
+      return new Date();
+    }
+  };
 }
