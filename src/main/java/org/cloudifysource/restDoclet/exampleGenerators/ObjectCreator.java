@@ -19,6 +19,7 @@ import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 
+import com.google.common.primitives.Primitives;
 import static com.google.common.collect.Lists.newArrayList;
 
 /**
@@ -32,7 +33,7 @@ public class ObjectCreator {
 
   public ObjectCreator() {
     objenesis_ = new ObjenesisStd();
-    exampleCreators_ = newArrayList(primitiveCreator_, stringCreator_, enumCreator_, dateCreator_, listCreator_);
+    exampleCreators_ = newArrayList(primitiveCreator_, wrapperCreator_, stringCreator_, enumCreator_, dateCreator_, listCreator_);
   }
 
   public Object createObject(final Class<?> cls) throws IllegalAccessException {
@@ -154,6 +155,18 @@ public class ObjectCreator {
     @Override
     public Object create(final Class cls) {
       return PrimitiveExampleValues.getValue(cls);
+    }
+  };
+
+  private static ExampleCreator wrapperCreator_ = new ExampleCreator() {
+    @Override
+    public boolean match(final Class cls) {
+      return Primitives.isWrapperType(cls);
+    }
+
+    @Override
+    public Object create(final Class cls) throws IllegalAccessException {
+      return PrimitiveExampleValues.getValue(Primitives.unwrap(cls));
     }
   };
 

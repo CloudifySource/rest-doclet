@@ -111,7 +111,7 @@ public class ObjectCreatorTest {
 
   static class Fish {
     private String name_;
-    private long count_;
+    private Long count_;
 
     public String getName() {
       return name_;
