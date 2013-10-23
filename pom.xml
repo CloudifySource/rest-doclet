@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.cloudifysource</groupId>
 	<artifactId>rest-doclet</artifactId>
-	<version>0.5.6-SNAPSHOT</version>
+	<version>0.5.8</version>
 
 	<properties>
 		<springVersion>3.2.4.RELEASE</springVersion>
@@ -129,4 +129,11 @@
 		</plugins>
 		<finalName>rest-doclet</finalName>
 	</build>
+  <distributionManagement>
+    <repository>
+      <id>aristaeus.mediagraft.com</id>
+      <name>aristaeus.mediagraft.com-releases</name>
+      <url>http://aristaeus.mediagraft.com:8080/libs-release-local</url>
+    </repository>
+  </distributionManagement>
 </project>

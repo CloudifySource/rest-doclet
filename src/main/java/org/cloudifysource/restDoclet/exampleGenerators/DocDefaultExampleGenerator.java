@@ -38,18 +38,8 @@ public class DocDefaultExampleGenerator implements
 		if (MultipartFile.class.getName().equals(clazz.getName())) {
 			return "\"file content\"";
 		}
-		if (clazz.isInterface()) {
-			throw new InstantiationException(
-					"the given class is an interface [" + clazz.getName() + "].");
-		}
 
-    Object newInstance;
-    if (clazz.isPrimitive()) {
-      newInstance = PrimitiveExampleValues.getValue(clazz);
-    }
-		else {
-      newInstance = objectCreator_.createObject(clazz);
-    }
+    Object newInstance = objectCreator_.createObject(clazz);
 		return new ObjectMapper()
             .configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false)
             .writeValueAsString(newInstance);
