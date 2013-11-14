@@ -73,9 +73,9 @@ import com.sun.javadoc.Type;
  * In default the Generator uses the velocity template
  * {@link RestDocConstants#VELOCITY_TEMPLATE_PATH} and writes the result to
  * {@link RestDocConstants#DOC_DEST_PATH}.
- * 
+ *
  * @author yael
- * 
+ *
  */
 public class Generator {
 	private static final Logger logger = Logger.getLogger(Generator.class.getName());
@@ -96,12 +96,12 @@ public class Generator {
 	private static IDocExampleGenerator responseExampleGenerator;
 	private static String requestBodyParamFilterName;
 	private static IRequestBodyParamFilter requestBodyParamFilter;
-	
+
 
 
 
 	/**
-	 * 
+	 *
 	 * @param rootDoc
 	 */
 	public Generator(final RootDoc rootDoc) {
@@ -110,24 +110,24 @@ public class Generator {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param args .
-	 * <p>This class uses the annotationType() method of class DocAnnotation, 
-	 * so if there is an annotation in the source with its class not in the class path, 
+	 * <p>This class uses the annotationType() method of class DocAnnotation,
+	 * so if there is an annotation in the source with its class not in the class path,
 	 * a ClassCastException will be thrown.
-	 * <br>For example, in order to use the PreAuthorize annotation, 
-	 * the spring-security-core JAR needs to be added to the class path. 
+	 * <br>For example, in order to use the PreAuthorize annotation,
+	 * the spring-security-core JAR needs to be added to the class path.
 	 * <br><a href="http://stackoverflow.com/questions/5314738/javadoc-annotations-from-third-party-libraries">
 	 * related question in stackoverflow</a>
 	 */
 	public static void main(final String[] args) {
 
-		/** 
-		 * This class uses the annotationType() method of class DocAnnotation, 
-		 * so if there is an annotation in the source which its class is not in the class path, 
+		/**
+		 * This class uses the annotationType() method of class DocAnnotation,
+		 * so if there is an annotation in the source which its class is not in the class path,
 		 * a ClassCastException will be thrown.
-		 * For example, to use the PreAuthorize annotation, 
-		 * the spring-security-core JAR need to be added to the class path. 
+		 * For example, to use the PreAuthorize annotation,
+		 * the spring-security-core JAR need to be added to the class path.
 		 * See <a href="http://stackoverflow.com/questions/5314738/javadoc-annotations-from-third-party-libraries">
 		 * related question in stackoverflow</a>
 		 **/
@@ -135,14 +135,14 @@ public class Generator {
 				RestDocConstants.DOCLET_FLAG, RestDoclet.class.getName(),
 				RestDocConstants.SOURCE_PATH_FLAG, RestDocConstants.SOURCES_PATH, RestDocConstants.CONTROLLERS_PACKAGE,
 				RestDocConstants.VELOCITY_TEMPLATE_PATH_FLAG, RestDocConstants.VELOCITY_TEMPLATE_PATH,
-				RestDocConstants.DOC_DEST_PATH_FLAG, RestDocConstants.DOC_DEST_PATH, 
+				RestDocConstants.DOC_DEST_PATH_FLAG, RestDocConstants.DOC_DEST_PATH,
 				RestDocConstants.DOC_CSS_PATH_FLAG, RestDocConstants.DOC_CSS_PATH,
 				RestDocConstants.VERSION_FLAG, RestDocConstants.VERSION
 				});
 	}
 
 	/**
-	 * 
+	 *
 	 * @param options
 	 */
 	private void setFlags(final String[][] options) {
@@ -202,41 +202,41 @@ public class Generator {
 		}
 
 		initRequestExampleGenerator(requestExampleGeneratorName);
-		logger.log(Level.INFO, "Updating request example generator class to " 
+		logger.log(Level.INFO, "Updating request example generator class to "
 		+ requestExampleGenerator.getClass().getName());
 		initResponseExampleGenerator(responseExampleGeneratorName);
-		logger.log(Level.INFO, "Updating response example generator class to " 
+		logger.log(Level.INFO, "Updating response example generator class to "
 		+ responseExampleGenerator.getClass().getName());
-		
+
 		initRequestBodyParamFilter();
-		logger.log(Level.INFO, "Updating request body parameter filter class to " 
+		logger.log(Level.INFO, "Updating request body parameter filter class to "
 		+ requestBodyParamFilter.getClass().getName());
 	}
-	
-	
+
+
 	private void initRequestBodyParamFilter() {
 		if (StringUtils.isBlank(requestBodyParamFilterName)) {
 			requestBodyParamFilter = new DefaultRequestBodyParameterFilter();
 		} else {
 			try {
 			Class<?> clazz = Class.forName(requestBodyParamFilterName);
-			requestBodyParamFilter = (IRequestBodyParamFilter) clazz.newInstance(); 
+			requestBodyParamFilter = (IRequestBodyParamFilter) clazz.newInstance();
 			} catch (Exception e) {
 				logger.log(Level.WARNING,
-						"Cought " + e.getClass().getName() 
-						+ " when tried to load and instantiate class " 
-						+ requestBodyParamFilterName 
+						"Cought " + e.getClass().getName()
+						+ " when tried to load and instantiate class "
+						+ requestBodyParamFilterName
 						+ ". Using a default filter class instead.");
 				requestBodyParamFilter = new DefaultRequestBodyParameterFilter();
 			}
 		}
 	}
-	
+
 	private void initRequestExampleGenerator(final String exampleGeneratorName) {
-		IDocExampleGenerator exampleGeneratorClass = 
+		IDocExampleGenerator exampleGeneratorClass =
 				getExampleGeneratorClass(
-						IDocExampleGenerator.class, 
-						exampleGeneratorName, 
+						IDocExampleGenerator.class,
+						exampleGeneratorName,
 						"request");
 		if (exampleGeneratorClass == null) {
 			requestExampleGenerator = new DocDefaultExampleGenerator();
@@ -244,12 +244,12 @@ public class Generator {
 			requestExampleGenerator = exampleGeneratorClass;
 		}
 	}
-	
+
 	private void initResponseExampleGenerator(final String exampleGeneratorName) {
-		IDocExampleGenerator exampleGeneratorClass = 
+		IDocExampleGenerator exampleGeneratorClass =
 				getExampleGeneratorClass(
-						IDocExampleGenerator.class, 
-						exampleGeneratorName, 
+						IDocExampleGenerator.class,
+						exampleGeneratorName,
 						"response");
 		if (exampleGeneratorClass == null) {
 			responseExampleGenerator = new DocDefaultExampleGenerator();
@@ -257,34 +257,34 @@ public class Generator {
 			responseExampleGenerator = exampleGeneratorClass;
 		}
 	}
-	
+
 	private <T> T getExampleGeneratorClass(
-			final Class<T> expectedInterface, 
-			final String exampleGeneratorName, 
+			final Class<T> expectedInterface,
+			final String exampleGeneratorName,
 			final String exampleType) {
 		if (StringUtils.isBlank(exampleGeneratorName)) {
-			logger.log(Level.INFO, 
-					"No custom example generator given, using a default " 
+			logger.log(Level.INFO,
+					"No custom example generator given, using a default "
 					+ exampleType + " example generator instead.");
 			return null;
-		} 
+		}
 
 		Class<?> reqExGenClass;
 		try {
 			reqExGenClass = Class.forName(exampleGeneratorName);
 		}	catch (ClassNotFoundException e) {
 			logger.log(Level.WARNING,
-					"Cought ClassNotFoundException when tried to load the " + exampleType 
-					+ " example generator class - " 
-					+ exampleGeneratorName 
+					"Cought ClassNotFoundException when tried to load the " + exampleType
+					+ " example generator class - "
+					+ exampleGeneratorName
 					+ ". Using a default generator instead.");
 			return null;
 		}
 		if (!expectedInterface.isAssignableFrom(reqExGenClass)) {
-			logger.log(Level.WARNING, 
-					"The given " + exampleType 
-					+ " example generator class [" + exampleGeneratorName 
-					+ "] does not implement "  + expectedInterface.getName() 
+			logger.log(Level.WARNING,
+					"The given " + exampleType
+					+ " example generator class [" + exampleGeneratorName
+					+ "] does not implement "  + expectedInterface.getName()
 					+ ". Using a default generator instead.");
 			return null;
 		}
@@ -293,16 +293,16 @@ public class Generator {
 			return expectedInterface.cast(reqExGenClass.newInstance());
 		} catch (Exception e) {
 			logger.log(Level.WARNING,
-					"Cought exception - " + e.getClass().getName() 
-					+ " when tried to instantiate the " + exampleType 
-					+ " example generator class [ " + exampleGeneratorName 
+					"Cought exception - " + e.getClass().getName()
+					+ " when tried to instantiate the " + exampleType
+					+ " example generator class [ " + exampleGeneratorName
 					+ "]. Using a default generator instead.");
 			return null;
 		}
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws Exception .
 	 */
 	public void run() throws Exception {
@@ -344,7 +344,7 @@ public class Generator {
 	/**
 	 * Creates the REST API documentation in HTML form, using the controllers'
 	 * data and the velocity template.
-	 * 
+	 *
 	 * @param controllers .
 	 * @return string that contains the documentation in HTML form.
 	 * @throws Exception .
@@ -354,7 +354,7 @@ public class Generator {
 
 		logger.log(Level.INFO, "Generate velocity using template: "
 				+ velocityTemplatePath
-				+ (isUserDefineTemplatePath ? File.separator 
+				+ (isUserDefineTemplatePath ? File.separator
 						+ velocityTemplateFileName + " (got template path from user)"
 						: "(default template path)"));
 
@@ -386,7 +386,7 @@ public class Generator {
 
 	}
 
-	private static List<DocController> generateControllers(final ClassDoc[] classes) 
+	private static List<DocController> generateControllers(final ClassDoc[] classes)
 			throws Exception {
 		List<DocController> controllersList = new LinkedList<DocController>();
 		for (ClassDoc classDoc : classes) {
@@ -399,11 +399,11 @@ public class Generator {
 		return controllersList;
 	}
 
-	private static List<DocController> generateControllers(final ClassDoc classDoc) 
+	private static List<DocController> generateControllers(final ClassDoc classDoc)
 			throws Exception {
-		List<DocController> controllers = new LinkedList<DocController>();		
+		List<DocController> controllers = new LinkedList<DocController>();
 		List<DocAnnotation> annotations = generateAnnotations(classDoc.annotations());
-		
+
 		if (Utils.filterOutControllerClass(classDoc, annotations)) {
 			return null;
 		}
@@ -411,7 +411,7 @@ public class Generator {
 		String controllerClassName = classDoc.typeName();
 		DocRequestMappingAnnotation requestMappingAnnotation = Utils.getRequestMappingAnnotation(annotations);
 		if (requestMappingAnnotation == null) {
-			throw new IllegalArgumentException("controller class " + controllerClassName 
+			throw new IllegalArgumentException("controller class " + controllerClassName
 					+ " is missing request mapping annotation");
 		}
 		String[] uriArray = requestMappingAnnotation.getValue();
@@ -447,26 +447,23 @@ public class Generator {
 	}
 
 	private static SortedMap<String, DocMethod> generateMethods(
-			final MethodDoc[] methods) 
+			final MethodDoc[] methods)
 					throws Exception {
 		SortedMap<String, DocMethod> docMethods = new TreeMap<String, DocMethod>();
 
 		for (MethodDoc methodDoc : methods) {
 			List<DocAnnotation> annotations = generateAnnotations(methodDoc.annotations());
-			
+
 			// Does not handle methods without a RequestMapping annotation.
 			if (Utils.filterOutMethod(methodDoc, annotations)) {
 				continue;
 			}
 			// get all HTTP methods
-			DocRequestMappingAnnotation requestMappingAnnotation = Utils
-					.getRequestMappingAnnotation(annotations);
+			DocRequestMappingAnnotation requestMappingAnnotation = Utils.getRequestMappingAnnotation(annotations);
 			String[] methodArray = requestMappingAnnotation.getMethod();
-			DocHttpMethod[] docHttpMethodArray = new DocHttpMethod[methodArray.length];
-			for (int i = 0; i < methodArray.length; i++) {
-				docHttpMethodArray[i] = generateHttpMethod(methodDoc,
-						methodArray[i], annotations);
-			}
+
+			DocHttpMethod[] docHttpMethodArray = httpMethodDoc(
+              methodArray == null? new String[0] : methodArray, methodDoc, annotations);
 			// get all URIs
 			String[] uriArray = requestMappingAnnotation.getValue();
 			if (uriArray == null || uriArray.length == 0) {
@@ -475,7 +472,7 @@ public class Generator {
 			}
 			for (String uri : uriArray) {
 				DocMethod docMethod = docMethods.get(uri);
-				// If method with that uri already exist, 
+				// If method with that uri already exist,
 				// add the current httpMethod to the existing method.
 				// There can be several httpMethods (GET, POST, DELETE) for each
 				// uri.
@@ -491,8 +488,24 @@ public class Generator {
 		return docMethods;
 	}
 
-	private static DocHttpMethod generateHttpMethod(final MethodDoc methodDoc,
-			final String httpMethodName, final List<DocAnnotation> annotations) 
+  private static DocHttpMethod[] httpMethodDoc(
+          final String[] methodArray,
+          final MethodDoc methodDoc,
+          final List<DocAnnotation> annotations) throws Exception
+  {
+    if (methodArray.length == 0) {
+      return new DocHttpMethod[] {generateHttpMethod(methodDoc, "ALL", annotations)};
+    }
+    DocHttpMethod[] docHttpMethodArray = new DocHttpMethod[methodArray.length];
+    for (int i = 0; i < methodArray.length; i++) {
+      docHttpMethodArray[i] = generateHttpMethod(methodDoc,
+              methodArray[i], annotations);
+    }
+    return docHttpMethodArray;
+  }
+
+  private static DocHttpMethod generateHttpMethod(final MethodDoc methodDoc,
+			final String httpMethodName, final List<DocAnnotation> annotations)
 					throws Exception {
 		DocHttpMethod httpMethod = new DocHttpMethod(methodDoc.name(),
 				httpMethodName);
@@ -504,7 +517,7 @@ public class Generator {
 				.getPossibleResponseStatusesAnnotation(annotations));
 
 		if (StringUtils.isBlank(httpMethod.getHttpMethodName())) {
-			throw new IllegalArgumentException("method " + methodDoc.name() 
+			throw new IllegalArgumentException("method " + methodDoc.name()
 					+  " is missing request mapping annotation's method (http method).");
 		}
 
@@ -512,11 +525,11 @@ public class Generator {
 	}
 
 	private static void generateExamples(final DocHttpMethod httpMethod,
-			final List<DocAnnotation> annotations) 
+			final List<DocAnnotation> annotations)
 					throws Exception {
 		DocJsonResponseExample jsonResponseExampleAnnotation = Utils.getJsonResponseExampleAnnotation(annotations);
 		DocJsonRequestExample jsonRequestExampleAnnotation = Utils.getJsonRequestExampleAnnotation(annotations);
-		
+
 		String requestExample;
 		if (jsonRequestExampleAnnotation != null) {
 			httpMethod.setJsonRequesteExample(jsonRequestExampleAnnotation);
@@ -530,23 +543,23 @@ public class Generator {
 		if (jsonResponseExampleAnnotation != null) {
 			httpMethod.setJsonResponseExample(jsonResponseExampleAnnotation);
 			responseExample = jsonResponseExampleAnnotation.generateJsonResponseBody();
-		} else {			
+		} else {
 			responseExample = generateResponseExample(httpMethod);
 		}
 		httpMethod.setResponseExample(responseExample);
-		
+
 	}
 
 	private static String generateRequestExmple(final DocHttpMethod httpMethod) {
-				
+
 		List<DocParameter> params = httpMethod.getParams();
 		Type type = null;
 		for (DocParameter docParameter : params) {
 			if (requestBodyParamFilter.filter(httpMethod, docParameter)) {
-				type = docParameter.getType();	
+				type = docParameter.getType();
 				break;
 			}
-		}  
+		}
 		if (type == null) {
 			return REQUEST_HAS_NO_BODY_MSG;
 		}
@@ -555,13 +568,13 @@ public class Generator {
 			generateExample = requestExampleGenerator.generateExample(type);
 			generateExample  = Utils.getIndentJson(generateExample);
 		} catch (Exception e) {
-			logger.warning("Could not generate request example for method: " + httpMethod.getMethodSignatureName() 
-					+ " with the request parameter type " + type.qualifiedTypeName() 
+			logger.warning("Could not generate request example for method: " + httpMethod.getMethodSignatureName()
+					+ " with the request parameter type " + type.qualifiedTypeName()
 					+ ". Exception was: " + e);
 			generateExample = RestDocConstants.FAILED_TO_CREATE_REQUEST_EXAMPLE + "."
-					+ LINE_SEPARATOR 
+					+ LINE_SEPARATOR
 					+ "Parameter type: " + type.qualifiedTypeName() + "."
-					+ LINE_SEPARATOR 
+					+ LINE_SEPARATOR
 					+ "The exception caught was " + e;
 		}
 		return generateExample;
@@ -578,15 +591,15 @@ public class Generator {
 			generateExample = responseExampleGenerator.generateExample(returnType);
 			generateExample = Utils.getIndentJson(generateExample);
 		} catch (Exception e) {
-			logger.warning("Could not generate response example for method: " + httpMethod.getMethodSignatureName() 
+			logger.warning("Could not generate response example for method: " + httpMethod.getMethodSignatureName()
 					+ " with the return value type [" + typeName + "]. Exception was: " + e);
 			generateExample = RestDocConstants.FAILED_TO_CREATE_RESPONSE_EXAMPLE
-					+ LINE_SEPARATOR 
+					+ LINE_SEPARATOR
 					+ "Return value type: " + typeName + "."
-					+ LINE_SEPARATOR 
+					+ LINE_SEPARATOR
 					+ "The exception caught was " + e;
 		}
-		
+
 		return generateExample;
 	}
 
