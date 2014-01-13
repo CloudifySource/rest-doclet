@@ -390,11 +390,171 @@ public final class RestDocConstants {
 		/**
 		 * 
 		 */
+		CONTINUE(100, "Continue"),
+		/**
+		 * 
+		 */
+		SWITCHING_PROTOCOLS(101, "Switching Protocols"),
+		
+		/**
+		 * 
+		 */
 		OK(200, "OK"),
 		/**
 		 * 
 		 */
-		INTERNAL_SERVER_ERROR(500, "Internal Server Error");
+		CREATED(201, "Created"),
+		/**
+		 * 
+		 */
+		ACCEPTED(202, "Accepted"),
+		/**
+		 * 
+		 */
+		NON_AUTHORITATIVE_INFORMATION(203, "Non-Authoritative Information"),
+		/**
+		 * 
+		 */
+		NO_CONTENT(204, "No Content"),
+		/**
+		 * 
+		 */
+		RESET_CONTENT(205, "Reset Content"),
+		/**
+		 * 
+		 */
+		PARTIAL_CONTENT(206, "Partial Content"),
+		
+		/**
+		 * 
+		 */
+		MULTIPLE_CHOICES(300, "Multiple Choices"),
+		/**
+		 * 
+		 */
+		MOVED_PERMANENTLY(301, "Moved Permanently"),
+		/**
+		 * 
+		 */
+		FOUND(302, "Found"),
+		/**
+		 * 
+		 */
+		SEE_OTHER(303, "See Other"),
+		/**
+		 * 
+		 */
+		NOT_MODIFIED(304, "Not Modified"),
+		/**
+		 * 
+		 */
+		USE_PROXY(305, "Use Proxy"),
+		/**
+		 * 
+		 */
+		UNUSED(306, "(Unused)"),
+		/**
+		 * 
+		 */
+		TEMPORARY_REDIRECT(307, "Temporary Redirect"),
+		
+		/**
+		 * 
+		 */
+		BAD_REQUEST(400, "Bad Request"),
+		/**
+		 * 
+		 */
+		UNAUTHORIZED(401, "Unauthorized"),
+		/**
+		 * 
+		 */
+		PAYMENT_REQUIRED(402, "Payment Required"),
+		/**
+		 * 
+		 */
+		FORBIDDEN(403, "Forbidden"),
+		/**
+		 * 
+		 */
+		NOT_FOUND(404, "Not Found"),
+		/**
+		 * 
+		 */
+		METHOD_NOT_ALLOWED(405, "Method Not Allowed"),
+		/**
+		 * 
+		 */
+		NOT_ACCEPTABLE(406, "Not Acceptable"),
+		/**
+		 * 
+		 */
+		PROXY_AUTHENTICATION_REQUIRED(407, "Proxy Authentication Required"),
+		/**
+		 * 
+		 */
+		REQUEST_TIMEOUT(408, "Request Timeout"),
+		/**
+		 * 
+		 */
+		CONFLICT(409, "Conflict"),
+		/**
+		 * 
+		 */
+		GONE(410, "Gone"),
+		/**
+		 * 
+		 */
+		LENGTH_REQUIRED(411, "Length Required"),
+		/**
+		 * 
+		 */
+		PRECONDITION_FAILED(412, "Precondition Failed"),
+		/**
+		 * 
+		 */
+		REQUEST_ENTITY_TOO_LARGE(413, "Request Entity Too Large"),
+		/**
+		 * 
+		 */
+		REQUEST_URI_TOO_LONG(414, "Request-URI Too Long"),
+		/**
+		 * 
+		 */
+		UNSUPPORTED_MEDIA_TYPE(415, "Unsupported Media Type"),
+		/**
+		 * 
+		 */
+		REQUESTED_RANGE_NOT_SATISFIABLE(416, "Requested Range Not Satisfiable"),
+		/**
+		 * 
+		 */
+		EXPECTATION_FAILED(417, "Expectation Failed"),
+		
+		/**
+		 * 
+		 */
+		INTERNAL_SERVER_ERROR(500, "Internal Server Error"),
+		/**
+		 * 
+		 */
+		NOT_IMPLEMENTED(501, "Not Implemented"),
+		/**
+		 * 
+		 */
+		BAD_GATEWAY(502, "Bad Gateway"),
+		/**
+		 * 
+		 */
+		SERVICE_UNAVAILABALE(503, "Service Unavailable"),
+		/**
+		 * 
+		 */
+		GATEWAY_TIMEOUT(504, "Gateway Timeout"),
+		/**
+		 * 
+		 */
+		HTTP_VERSION_NOT_SUPPORTED(505, "HTTP Version Not Supported");
 
 		private final int value;
 		private final String reasonPhrase;
@@ -411,11 +571,128 @@ public final class RestDocConstants {
 		 * @return The response code.
 		 */
 		public static ResponseCodes fromCode(final int code) {
+			if (CONTINUE.getValue() == code) {
+				return CONTINUE;
+			}
+			if (SWITCHING_PROTOCOLS.getValue() == code) {
+				return SWITCHING_PROTOCOLS;
+			}
 			if (OK.getValue() == code) {
 				return OK;
 			}
+			if (CREATED.getValue() == code) {
+				return CREATED;
+			}
+			if (ACCEPTED.getValue() == code) {
+				return ACCEPTED;
+			}
+			if (NON_AUTHORITATIVE_INFORMATION.getValue() == code) {
+				return NON_AUTHORITATIVE_INFORMATION;
+			}
+			if (NO_CONTENT.getValue() == code) {
+				return NO_CONTENT;
+			}
+			if (RESET_CONTENT.getValue() == code) {
+				return RESET_CONTENT;
+			}
+			if (PARTIAL_CONTENT.getValue() == code) {
+				return PARTIAL_CONTENT;
+			}
+			if (MULTIPLE_CHOICES.getValue() == code) {
+				return MULTIPLE_CHOICES;
+			}
+			if (MOVED_PERMANENTLY.getValue() == code) {
+				return MOVED_PERMANENTLY;
+			}
+			if (FOUND.getValue() == code) {
+				return FOUND;
+			}
+			if (SEE_OTHER.getValue() == code) {
+				return SEE_OTHER;
+			}
+			if (NOT_MODIFIED.getValue() == code) {
+				return NOT_MODIFIED;
+			}
+			if (USE_PROXY.getValue() == code) {
+				return USE_PROXY;
+			}
+			if (UNUSED.getValue() == code) {
+				return UNUSED;
+			}
+			if (TEMPORARY_REDIRECT.getValue() == code) {
+				return TEMPORARY_REDIRECT;
+			}
+			if (BAD_REQUEST.getValue() == code) {
+				return BAD_REQUEST;
+			}
+			if (UNAUTHORIZED.getValue() == code) {
+				return UNAUTHORIZED;
+			}
+			if (PAYMENT_REQUIRED.getValue() == code) {
+				return PAYMENT_REQUIRED;
+			}
+			if (FORBIDDEN.getValue() == code) {
+				return FORBIDDEN;
+			}
+			if (NOT_FOUND.getValue() == code) {
+				return NOT_FOUND;
+			}
+			if (METHOD_NOT_ALLOWED.getValue() == code) {
+				return METHOD_NOT_ALLOWED;
+			}
+			if (NOT_ACCEPTABLE.getValue() == code) {
+				return NOT_ACCEPTABLE;
+			}
+			if (PROXY_AUTHENTICATION_REQUIRED.getValue() == code) {
+				return PROXY_AUTHENTICATION_REQUIRED;
+			}
+			if (REQUEST_TIMEOUT.getValue() == code) {
+				return REQUEST_TIMEOUT;
+			}
+			if (CONFLICT.getValue() == code) {
+				return CONFLICT;
+			}
+			if (GONE.getValue() == code) {
+				return GONE;
+			}
+			if (LENGTH_REQUIRED.getValue() == code) {
+				return LENGTH_REQUIRED;
+			}
+			if (PRECONDITION_FAILED.getValue() == code) {
+				return PRECONDITION_FAILED;
+			}
+			if (REQUEST_ENTITY_TOO_LARGE.getValue() == code) {
+				return REQUEST_ENTITY_TOO_LARGE;
+			}
+			if (REQUEST_URI_TOO_LONG.getValue() == code) {
+				return REQUEST_URI_TOO_LONG;
+			}
+			if (UNSUPPORTED_MEDIA_TYPE.getValue() == code) {
+				return UNSUPPORTED_MEDIA_TYPE;
+			}
+			if (REQUESTED_RANGE_NOT_SATISFIABLE.getValue() == code) {
+				return REQUESTED_RANGE_NOT_SATISFIABLE;
+			}
+			if (EXPECTATION_FAILED.getValue() == code) {
+				return EXPECTATION_FAILED;
+			}
 			if (INTERNAL_SERVER_ERROR.getValue() == code) {
 				return INTERNAL_SERVER_ERROR;
+			}
+			if (NOT_IMPLEMENTED.getValue() == code) {
+				return NOT_IMPLEMENTED;
+			}
+			if (BAD_GATEWAY.getValue() == code) {
+				return BAD_GATEWAY;
+			}
+			if (SERVICE_UNAVAILABALE.getValue() == code) {
+				return SERVICE_UNAVAILABALE;
+			}
+			if (GATEWAY_TIMEOUT.getValue() == code) {
+				return GATEWAY_TIMEOUT;
+			}
+			if (HTTP_VERSION_NOT_SUPPORTED.getValue() == code) {
+				return HTTP_VERSION_NOT_SUPPORTED;
 			}
 			throw new IllegalArgumentException(
 					"Unsupported ResponseCodes code: " + code);
